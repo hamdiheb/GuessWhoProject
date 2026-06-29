@@ -4,3 +4,8 @@
     object-fit: contain;
     margin-right: 10px;
 }
+
+.submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
