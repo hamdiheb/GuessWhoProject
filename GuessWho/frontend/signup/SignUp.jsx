@@ -17,23 +17,25 @@ function SignUp() {
 
   const navigate = useNavigate();
 
+  const isFormIncomplete =
+  !username.trim() ||
+  !email.trim() ||
+  !password.trim();
+
   // Function
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!username.trim() || !email.trim() || !password.trim()) {
-        alert('All fields are required.');
-        return;
-    }
-
-      
-
+    if (isFormIncomplete) {
+    alert("All fields are required.");
+    return;
+  }
 
     console.log('Username:', username);
     console.log('Email:', email);
     console.log('Password:', password);
 
-    navigate('/profile')
+    navigate('/dashboard');
 
   };
 
@@ -73,8 +75,6 @@ function SignUp() {
                     />
                 </div>
 
-                
-               
                 <div className='input'>
                     <img src={password_icon} alt='Password' />
                     <input 
@@ -91,7 +91,7 @@ function SignUp() {
             <button 
             className='submit' 
             type='submit'
-            disabled={!username.trim() || !email.trim() || !password.trim()}
+            disabled={isFormIncomplete}
             >
                 Sign Up
             </button>
