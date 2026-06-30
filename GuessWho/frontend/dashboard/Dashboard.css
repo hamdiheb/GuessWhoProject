@@ -12,7 +12,7 @@
   font-size: 32px;
   font-weight: bold;
   color: var(--text-h);
-
+}
 .header .underline {
   width: 50px;
   height: 4px;
