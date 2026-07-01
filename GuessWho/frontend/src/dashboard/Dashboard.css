@@ -12,11 +12,11 @@
   font-size: 32px;
   font-weight: bold;
   color: var(--text-h);
-
+}
 .header .underline {
   width: 50px;
   height: 4px;
-  background: var(--accent); 
+  background: var(--accent);
   margin: 5px auto;
 }
 
