@@ -18,7 +18,7 @@ function SignUp() {
     !username.trim() || !email.trim() || !password.trim();
 
   // Function
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (isFormIncomplete) {
@@ -26,11 +26,34 @@ function SignUp() {
       return;
     }
 
-    console.log('Username:', username);
-    console.log('Email:', email);
-    console.log('Password:', password);
+    try {
+      const response = await fetch('http://localhost:3000/api/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username,
+          email,
+          password,
+        }),
+      });
 
-    navigate('/dashboard');
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message);
+        return;
+      }
+
+      alert('Account created successfully!');
+      navigate('/dashboard');
+    } catch (error) {
+      console.error(error);
+      alert('Cannot connect to the server');
+    }
+
+    
   };
 
   return (
