@@ -1,30 +1,30 @@
-import { useState } from 'react';
-import './dashboard.css';
+import { useState } from 'react'
+import './Dashboard.css'
 
 function Dashboard() {
   // State
-  const [gameId, setGameId] = useState('');
-  const [showJoin, setShowJoin] = useState(false);
-  const [idInput, setIdInput] = useState('');
+  const [gameId, setGameId] = useState('')
+  const [showJoin, setShowJoin] = useState(false)
+  const [idInput, setIdInput] = useState('')
 
   // Function
   const handleHost = () => {
-    const randomId = Math.floor(1000 + Math.random() * 9000);
-    setGameId(randomId);
-    setShowJoin(false);
-  };
+    const randomId = Math.floor(1000 + Math.random() * 9000)
+    setGameId(randomId)
+    setShowJoin(false)
+  }
   const handleJoinClick = () => {
-    setShowJoin(true);
-    setGameId('');
-  };
+    setShowJoin(true)
+    setGameId('')
+  }
   const handleJoinSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (!idInput) {
-      alert('Please enter Game ID.');
-      return;
+      alert('Please enter Game ID.')
+      return
     }
-    alert('Joining game with ID: ' + idInput);
-  };
+    alert('Joining game with ID: ' + idInput)
+  }
 
   return (
     <div className="dashboard-container">
@@ -62,7 +62,7 @@ function Dashboard() {
         </form>
       )}
     </div>
-  );
+  )
 }
 
-export default Dashboard;
+export default Dashboard
