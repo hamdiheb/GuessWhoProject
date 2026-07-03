@@ -8,7 +8,6 @@ import user_icon from './Assets_SignUp/user.jpg'
 import password_icon from './Assets_SignUp/password.jpg'
 
 function SignUp() {
-  // State
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -19,7 +18,6 @@ function SignUp() {
 
   const isFormIncomplete = !username.trim() || !email.trim() || !password.trim()
 
-  // Function
   const handleSubmit = async (e) => {
     e.preventDefault()
     setErrorMessage('')
@@ -31,16 +29,22 @@ function SignUp() {
     }
 
     try {
-      const { error } = await supabase.from('users').insert({
-        username,
-        email,
-        password,
-      })
+      const { data, error } = await supabase
+        .from('users')
+        .insert({
+          username,
+          email,
+          password,
+        })
+        .select()
+        .single()
 
       if (error) {
         setErrorMessage(error.message)
         return
       }
+
+      localStorage.setItem('currentUserId', data.id)
 
       setSuccessMessage('Account created successfully!')
 

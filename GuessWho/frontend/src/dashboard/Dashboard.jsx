@@ -1,11 +1,34 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { supabase } from '../../../backend/server'
 import './Dashboard.css'
 
 function Dashboard() {
-  // State
   const [gameId, setGameId] = useState('')
   const [showJoin, setShowJoin] = useState(false)
   const [idInput, setIdInput] = useState('')
+  const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userId = localStorage.getItem('currentUserId')
+      if (!userId) return
+
+      const { data, error } = await supabase
+        .from('users')
+        .select('username')
+        .eq('id', userId)
+        .single()
+
+      if (error) {
+        console.error(error)
+        return
+      }
+
+      setUser(data)
+    }
+
+    fetchUser()
+  }, [])
 
   // Function
   const handleHost = () => {
@@ -28,6 +51,8 @@ function Dashboard() {
 
   return (
     <div className="dashboard-container">
+      {user && <div className="user-name">Welcome, {user.username}</div>}
+
       <div className="header">
         <div className="text">Dashboard</div>
         <div className="underline"></div>
