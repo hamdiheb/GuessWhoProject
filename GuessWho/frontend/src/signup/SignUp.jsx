@@ -1,16 +1,16 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './SignUp.css';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./SignUp.css";
 
-import email_icon from './Assets_SignUp/email.jpg';
-import user_icon from './Assets_SignUp/user.jpg';
-import password_icon from './Assets_SignUp/password.jpg';
+import email_icon from "./Assets_SignUp/email.jpg";
+import user_icon from "./Assets_SignUp/user.jpg";
+import password_icon from "./Assets_SignUp/password.jpg";
 
 function SignUp() {
   // State
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
 
@@ -22,15 +22,15 @@ function SignUp() {
     e.preventDefault();
 
     if (isFormIncomplete) {
-      alert('All fields are required.');
+      alert("All fields are required.");
       return;
     }
 
-    console.log('Username:', username);
-    console.log('Email:', email);
-    console.log('Password:', password);
+    console.log("Username:", username);
+    console.log("Email:", email);
+    console.log("Password:", password);
 
-    navigate('/dashboard');
+    navigate("/dashboard");
   };
 
   return (
@@ -87,8 +87,8 @@ function SignUp() {
       </form>
 
       <div className="login-link">
-        Already have an account?{' '}
-        <span onClick={() => navigate('/signin')}>Sign In</span>
+        Already have an account?{" "}
+        <span onClick={() => navigate("/signin")}>Sign In</span>
       </div>
     </div>
   );
