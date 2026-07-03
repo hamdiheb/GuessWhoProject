@@ -5,7 +5,26 @@
   margin-right: 10px;
 }
 
+.input img:hover {
+  transform: scale(1.1);
+}
+
 .submit:disabled {
-  opacity: 0.5;
+  background-color: #cfd8dc;
+  opacity: 0.7;
   cursor: not-allowed;
+  box-shadow: none;
+}
+
+.submit:disabled:hover {
+  transform: none;
+}
+
+.submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+}
+
+.submit:active:not(:disabled) {
+  transform: translateY(0);
 }
