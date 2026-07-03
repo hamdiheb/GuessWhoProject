@@ -14,7 +14,7 @@
   color: var(--text-h);
 }
 .header .underline {
-  width: 50px;
+  width: 160px;
   height: 4px;
   background: var(--accent);
   margin: 5px auto;
