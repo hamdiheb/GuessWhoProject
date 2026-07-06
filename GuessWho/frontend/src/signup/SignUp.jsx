@@ -49,7 +49,7 @@ function SignUp() {
       setSuccessMessage('Account created successfully!')
 
       setTimeout(() => {
-        navigate('/dashboard')
+        navigate('/profile')
       }, 1500)
     } catch (error) {
       console.error(error)
