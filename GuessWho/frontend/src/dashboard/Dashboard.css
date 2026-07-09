@@ -1,60 +1,85 @@
 .dashboard-container {
+  max-width: 600px;
+  margin: 60px auto;
+  padding: 40px;
+  background-color: #1a1a20;
+  color: #e0e0e0;
+  border: 1px solid #2d2d35;
+  border-radius: 12px;
   text-align: center;
-  margin-top: 50px;
-  font-family: Arial, sans-serif;
+  font-family: "Segoe UI", system-ui, sans-serif;
 }
 
 .header {
-  margin-bottom: 30px;
+  margin-bottom: 40px;
 }
 
 .header .text {
-  font-size: 32px;
-  font-weight: bold;
-  color: var(--text-h);
+  font-size: 28px;
+  font-weight: 600;
+  color: #ffffff;
 }
+
 .header .underline {
-  width: 160px;
-  height: 4px;
-  background: var(--accent);
-  margin: 5px auto;
+  width: 80px;
+  height: 3px;
+  background: #00ff66;
+  margin: 10px auto;
+  border-radius: 2px;
 }
 
 .buttons-section {
-  margin-bottom: 20px;
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
 }
 
 .submit {
-  background: var(--accent);
-  color: white;
-  padding: 10px 20px;
-  margin: 10px;
+  background: #ffffff;
+  color: #1a1a20;
+  padding: 10px 25px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.submit:hover {
+  opacity: 0.9;
 }
 
 .game-id-box {
-  margin: 20px auto;
-  font-size: 20px;
-  color: var(--text-h);
+  margin: 30px auto;
+  padding: 15px;
+  font-size: 18px;
+  color: #b0b0b0;
+  background: #25252d;
+  border-radius: 8px;
+  border: 1px solid #2d2d35;
 }
 
 .inputs {
-  margin: 15px 0;
+  margin: 20px 0;
 }
 
 .input input {
-  padding: 10px;
-  border: 1px solid var(--border);
-  border-radius: 4px;
+  padding: 12px;
+  background: #25252d;
+  border: 1px solid #2d2d35;
+  border-radius: 6px;
+  color: #ffffff;
   font-size: 16px;
   text-align: center;
+  width: 80%;
+  max-width: 300px;
 }
 
 .user-name {
   font-size: 16px;
   font-weight: 500;
+  color: #888;
   margin-bottom: 16px;
 }
