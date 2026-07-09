@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../../backend/server";
 import "./Dashboard.css";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
   const [gameId, setGameId] = useState("");
@@ -8,6 +9,7 @@ function Dashboard() {
   const [idInput, setIdInput] = useState("");
   const [user, setUser] = useState(null);
   const [roomName, setRoomName] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -40,6 +42,7 @@ function Dashboard() {
     const randomId = Math.floor(1000 + Math.random() * 9000);
     setGameId(randomId);
     setShowJoin(false);
+    navigate(`/game-room/${randomId}`, { state: { roomName: roomName } });
   };
   const handleJoinClick = () => {
     setShowJoin(true);
