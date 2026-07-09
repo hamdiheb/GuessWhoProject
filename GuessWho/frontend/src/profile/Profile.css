@@ -1,15 +1,4 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  background: #f3f6fb;
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-.container {
+.profile-page {
   width: 100%;
   max-width: 100%;
   margin: 20px auto;
@@ -19,20 +8,25 @@ body {
   box-shadow: 0 5px 20px rgba(0, 0, 0, .08);
 }
 
-h2 {
+.profile-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.profile-container h2 {
   text-align: center;
   color: #2563eb;
   margin-bottom: 25px;
 }
 
-h3 {
+.profile-container h3 {
   margin: 20px 0 10px;
   color: #333;
   font-size: 18px;
 }
 
-input[type="text"],
-textarea {
+.profile-container input[type="text"],
+.profile-container textarea {
   width: 100%;
   padding: 14px;
   margin-bottom: 20px;
@@ -42,18 +36,18 @@ textarea {
   transition: .3s;
 }
 
-input[type="text"]:focus,
-textarea:focus {
+.profile-container input[type="text"]:focus,
+.profile-container textarea:focus {
   outline: none;
   border-color: #2563eb;
 }
 
-textarea {
+.profile-container textarea {
   min-height: 120px;
   resize: vertical;
 }
 
-label {
+.profile-container label {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -66,19 +60,19 @@ label {
   transition: .2s;
 }
 
-label:hover {
+.profile-container label:hover {
   background: #e8f0ff;
   border-color: #2563eb;
 }
 
-input[type="checkbox"] {
+.profile-container input[type="checkbox"] {
   width: 18px;
   height: 18px;
   accent-color: #2563eb;
 }
 
-button {
-  width: 100%;
+.profile-container button {
+  width: 50%;
   margin-top: 25px;
   padding: 14px;
   border: none;
@@ -90,7 +84,7 @@ button {
   transition: .3s;
 }
 
-button:hover {
+.profile-container button:hover {
   background: #1d4ed8;
 }
 
@@ -98,19 +92,19 @@ button:hover {
 
 @media (min-width: 768px) {
 
-  .container {
+  .profile-container {
     max-width: 750px;
     padding: 35px;
   }
 
-  label {
+ .profile-container label {
     display: inline-flex;
     width: 48%;
     margin-right: 2%;
     margin-bottom: 12px;
   }
 
-  button {
+  .profile-container button {
     width: 250px;
     display: block;
     margin: 30px auto 0;
@@ -130,11 +124,11 @@ button:hover {
     margin-right: 3%;
   }
 
-  h2 {
+  .profile-container h2 {
     font-size: 34px;
   }
 
-  h3 {
+  .profile-container h3 {
     font-size: 22px;
   }
 }

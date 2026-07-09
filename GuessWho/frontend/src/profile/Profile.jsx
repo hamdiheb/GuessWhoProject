@@ -42,7 +42,6 @@ export default function Profile() {
 
   const [profile, setProfile] = useState({
     fullName: '',
-    aboutMe: '',
     programming: [],
     softSkills: [],
     sports: [],
@@ -75,7 +74,7 @@ export default function Profile() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!profile.fullName || !profile.aboutMe) {
+    if (!profile.fullName.trim()) {
         alert('Please complete all required fields');
         return;
     }
@@ -88,23 +87,18 @@ export default function Profile() {
 };
 
   return (
-    <div className="container">
+    <div className="profile-page">
+    <div className="profile-container">
+
       <h2>Create Profile</h2>
 
       <form onSubmit={handleSubmit}>
-
+        <h3>Player Name</h3>
         <input
           type="text"
           name="fullName"
-          placeholder="Full Name"
+          placeholder="Enter your player name"
           value={profile.fullName}
-          onChange={handleInput}
-        />
-
-        <textarea
-          name="aboutMe"
-          placeholder="Tell us about yourself..."
-          value={profile.aboutMe}
           onChange={handleInput}
         />
 
@@ -178,8 +172,8 @@ export default function Profile() {
         <button type="submit">
           Save Profile
         </button>
-
       </form>
+      </div>
     </div>
   );
 }
