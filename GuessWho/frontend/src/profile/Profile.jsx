@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Profile.css';
+import styles from './Profile.module.css';
+import Container from "../components/Container/Container";
 
 const programmingLanguages = [
     'JavaScript',
@@ -87,8 +88,8 @@ export default function Profile() {
 };
 
   return (
-    <div className="profile-page">
-    <div className="profile-container">
+    <div className={styles.profilePage}>
+    <Container className={styles.profileContainer}>
 
       <h2>Create Profile</h2>
 
@@ -104,7 +105,7 @@ export default function Profile() {
 
         <h3>Programming Languages</h3>
          
-         <div className='checkbox-group'>
+         <div className={styles.checkboxGroup}>
         {programmingLanguages.map((language) => (
           <label key={language}>
             <input
@@ -121,7 +122,7 @@ export default function Profile() {
 
         <h3>Soft Skills</h3>
 
-        <div className='checkbox-group'>
+        <div className={styles.checkboxGroup}>
         {softSkills.map((skill) => (
           <label key={skill}>
             <input
@@ -138,7 +139,7 @@ export default function Profile() {
 
         <h3>Sports</h3>
 
-        <div className='checkbox-group'>
+        <div className={styles.checkboxGroup}>
         {sports.map((sport) => (
           <label key={sport}>
             <input
@@ -154,7 +155,7 @@ export default function Profile() {
         </div>
 
         <h3>Hobbies</h3>
-        <div className='checkbox-group'>
+       <div className={styles.checkboxGroup}>
         {hobbies.map((hobby) => (
           <label key={hobby}>
             <input
@@ -173,7 +174,7 @@ export default function Profile() {
           Save Profile
         </button>
       </form>
-      </div>
+      </Container>
     </div>
   );
 }
