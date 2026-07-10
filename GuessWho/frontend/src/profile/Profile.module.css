@@ -1,0 +1,131 @@
+.profilePage{
+  width: 100%;
+  margin: 20px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, .08);
+}
+
+.profileContainer{
+    padding: 20px;
+}
+.profileContainer h2 {
+  text-align: center;
+  color: #2563eb;
+  margin-bottom: 25px;
+}
+
+.profileContainer h3 {
+  margin: 20px 0 10px;
+  color: #333;
+  font-size: 18px;
+}
+
+.profileContainer button {
+  width: 50%;
+  margin-top: 25px;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: #2563eb;
+  color: white;
+  font-size: 17px;
+  cursor: pointer;
+  transition: .3s;
+}
+
+.profileContainer label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+  background: #f8f9fc;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.profileContainer input[type="text"],
+.profileContainer textarea {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 20px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  font-size: 16px;
+  transition: .3s;
+}
+
+.profileContainer input[type="text"]:focus,
+.profileContainer textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+.profileContainer textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+
+.profileContainer label:hover {
+  background: #e8f0ff;
+  border-color: #2563eb;
+}
+
+.profileContainer input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #2563eb;
+}
+
+
+.profileContainer button:hover {
+  background: #1d4ed8;
+}
+
+.checkboxGroup {
+  margin-bottom: 20px;
+}
+
+/* ---------- Tablet ------ */
+
+@media (min-width: 768px) {
+.profileContainer {
+    padding: 35px;
+  }
+
+.profileContainer label {
+    display: inline-flex;
+    width: 48%;
+    margin-right: 2%;
+    margin-bottom: 12px;
+  }
+
+.profileContainer button {
+    width: 250px;
+    display: block;
+    margin: 30px auto 0;
+  }
+}
+
+/* -------- Desktop -------- */
+
+@media (min-width: 1200px) {
+
+  .profileContainer label {
+    width: 30%;
+    margin-right: 3%;
+  }
+
+  .profileContainer h2 {
+    font-size: 34px;
+  }
+
+  .profileContainer h3 {
+    font-size: 22px;
+  }
+}
