@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import './SignUp.css'
+import styles from './SignUp.module.css'
 import { supabase } from '../../../backend/server'
-
 import email_icon from './Assets_SignUp/email.jpg'
 import user_icon from './Assets_SignUp/user.jpg'
 import password_icon from './Assets_SignUp/password.jpg'
@@ -58,15 +57,15 @@ function SignUp() {
   }
 
   return (
-    <div className="container">
-      <div className="header">
-        <div className="text">Sign Up</div>
-        <div className="underline"></div>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <div className={styles.text}>Sign Up</div>
+        <div className={styles.underline}></div>
       </div>
 
       <form onSubmit={handleSubmit}>
-        <div className="inputs">
-          <div className="input">
+        <div className={styles.inputs}>
+          <div className={styles.input}>
             <img src={user_icon} alt="User" />
 
             <input
@@ -79,7 +78,7 @@ function SignUp() {
             />
           </div>
 
-          <div className="input">
+          <div className={styles.input}>
             <img src={email_icon} alt="Email" />
 
             <input
@@ -92,7 +91,7 @@ function SignUp() {
             />
           </div>
 
-          <div className="input">
+          <div className={styles.input}>
             <img src={password_icon} alt="Password" />
             <input
               name="password"
@@ -105,16 +104,16 @@ function SignUp() {
           </div>
         </div>
 
-        {successMessage && <div className="success-message">{successMessage}</div>}
+        {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
 
-        {errorMessage && <div className="error-message">{errorMessage}</div>}
+        {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
 
-        <button className="submit" type="submit" disabled={isFormIncomplete}>
+        <button className={styles.submit} type="submit" disabled={isFormIncomplete}>
           Sign Up
         </button>
       </form>
 
-      <div className="login-link">
+      <div className={styles.loginLink}>
         Already have an account? <span onClick={() => navigate('/signin')}>Sign In</span>
       </div>
     </div>

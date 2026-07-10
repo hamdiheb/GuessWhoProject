@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../../../backend/server";
-import "./Dashboard.css";
+import styles from "./Dashboard.module.css";
 import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
@@ -58,44 +58,45 @@ function Dashboard() {
   };
 
   return (
-    <div className="dashboard-container">
-      {user && <div className="user-name">Welcome, {user.username}</div>}
+    <div className={styles.page}>
+    <div className={styles.dashboardContainer}>
+      {user && <div className={styles.userName}>Welcome, {user.username}</div>}
 
-      <div className="header">
-        <div className="text">Dashboard</div>
-        <div className="underline"></div>
+      <div className={styles.header}>
+        <div className={styles.text}>Dashboard</div>
+        <div className={styles.underline}></div>
       </div>
       {!showJoin && !gameId && (
-        <div className="inputs game-name-input-group">
-          <div className="input">
+          <div className={styles.inputs}>
+              <div className={styles.input}>
             <input
               type="text"
               placeholder="Enter Room Name"
               value={roomName}
               onChange={(e) => setRoomName(e.target.value)}
             />
-          </div>
+            </div>
         </div>
       )}
-      <div className="buttons-section">
-        <button className="submit" onClick={handleHost}>
+      <div className={styles.buttonsSection}>
+        <button className={styles.submit} onClick={handleHost}>
           {" "}
           Host a Game{" "}
         </button>
-        <button className="submit" onClick={handleJoinClick}>
+        <button className={styles.submit} onClick={handleJoinClick}>
           {" "}
           Join a Game{" "}
         </button>
       </div>
       {gameId && (
-        <div className="game-id-box">
+        <div className={styles.gameIdBox}>
           Room: {roomName} | Your Game ID: {gameId}
         </div>
       )}
       {showJoin && (
         <form onSubmit={handleJoinSubmit}>
-          <div className="inputs">
-            <div className="input">
+          <div className={styles.inputs}>
+          <div className={styles.input}>
               <input
                 type="text"
                 placeholder="Enter Game ID"
@@ -104,12 +105,13 @@ function Dashboard() {
               />
             </div>
           </div>
-          <button className="submit" type="submit">
+          <button className={styles.submit} type="submit">
             {" "}
             Join{" "}
           </button>
         </form>
       )}
+    </div>
     </div>
   );
 }
