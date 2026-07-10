@@ -1,0 +1,81 @@
+.gameroom-container {
+  max-width: 600px;
+  margin: 60px auto;
+  padding: 40px;
+  background-color: #1a1a20;
+  color: #e0e0e0;
+  border: 1px solid #2d2d35;
+  border-radius: 12px;
+}
+
+.room-info-header {
+  margin-bottom: 35px;
+  text-align: center;
+}
+
+.room-info-header h2 {
+  font-size: 26px;
+  color: #ffffff;
+  margin: 0 0 8px 0;
+  font-weight: 600;
+}
+
+.code-text {
+  color: #4ade80;
+  font-family: monospace;
+  font-size: 18px;
+  background: #25252d;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.options-group {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  margin-bottom: 40px;
+  font-size: 14px;
+}
+
+.option-label {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #b0b0b0;
+}
+
+.content-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-top: 1px solid #2d2d35;
+  padding-top: 30px;
+}
+
+.players-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+}
+
+.player-item {
+  font-size: 15px;
+  color: #d1d1d1;
+}
+
+.start-button {
+  padding: 10px 32px;
+  background-color: #ffffff;
+  color: #1a1a20;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.start-button:hover {
+  opacity: 0.9;
+}
