@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { supabase } from '../../../backend/server'
 import './Profile.css'
 
 const programmingLanguages = ['JavaScript', 'TypeScript', 'Python', 'Java', 'C#', 'C++', 'Go']
@@ -44,7 +45,7 @@ export default function Profile() {
     }
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
 
     if (!profile.fullName.trim()) {
@@ -54,16 +55,37 @@ export default function Profile() {
 
     const userId = localStorage.getItem('currentUserId')
 
-    const profileToSave = {
-      ...profile,
-      userId,
+    if (!userId) {
+      alert('You must be logged in to save a profile')
+      return
     }
 
-    console.log(profileToSave)
+    const skills = [
+      { category: 'programming', values: profile.programming },
+      { category: 'softSkills', values: profile.softSkills },
+      { category: 'sports', values: profile.sports },
+      { category: 'hobbies', values: profile.hobbies },
+    ]
 
-    // alert("Profile saved!");
+    const { data, error } = await supabase
+      .from('users')
+      .update({
+        full_name: profile.fullName,
+        skills: skills,
+      })
+      .eq('id', userId)
+      .select()
 
-    // navigate("/dashboard");
+    if (error) {
+      console.log('message:', error.message)
+      console.log('details:', error.details)
+      console.log('hint:', error.hint)
+      console.log('code:', error.code)
+      alert('Failed to save profile: ' + error.message)
+      return
+    }
+
+    navigate('/dashboard')
   }
 
   return (
