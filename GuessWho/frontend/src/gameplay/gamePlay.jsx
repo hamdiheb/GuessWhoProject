@@ -2,60 +2,75 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../../../backend/server'
 
 export default function Gameplay() {
-  const [games, setGames] = useState([])
-  const [skills, setSkills] = useState([])
-  async function fetchUsersData() {
+  const [usersOnGame, setUsersOnGame] = useState([])
+  const [registeredUsers, setRegisteredUsers] = useState([])
+  const [userSkills, setUserSkills] = useState([])
+
+  //Fetching game data (game_code, joined_users, etc.)
+  async function fetchUsersOnGame() {
     const { data, error } = await supabase.from('game').select('*')
     if (error) {
       console.error(error)
       return
     }
-    setGames(data)
+    setUsersOnGame(data)
   }
 
   useEffect(() => {
-    fetchUsersData()
+    fetchUsersOnGame()
   }, [])
 
-  async function fetchUserSkills() {
+  //Fetching all registered users
+  async function fetchRegistredUsers() {
     const { data, error } = await supabase.from('users').select('*')
     if (error) {
-      console.error(error)
+      console.log(error)
       return
     }
-    setSkills(data)
+    setRegisteredUsers(data)
   }
 
   useEffect(() => {
-    fetchUserSkills()
+    fetchRegistredUsers()
   }, [])
 
-  function userSkill() {
-    let skillUser = []
-    games[0]?.joined_users.forEach((user) => {
-      skillUser = skills.forEach((skill) => {
-        return skill.id == user
-      })
-    })
-    console.log(skillUser)
+  //Match registered users against joined_users, collect their skills
+  function fetchSkills(data) {
+    if (usersOnGame.length <= 1) {
+      const joinedIds = usersOnGame[0]?.joined_users ?? []
+      const matchedSkills = data
+        .filter((element) => joinedIds.includes(element.id))
+        .flatMap((element) => element.skills) // flatMap in case `skills` is itself an array per user
+
+      setUserSkills(matchedSkills)
+    }
   }
 
   useEffect(() => {
-    userSkill()
-  }, [])
-  if (games.length === 0) {
+    fetchSkills(registeredUsers)
+  }, [registeredUsers, usersOnGame])
+
+  if (usersOnGame.length === 0) {
     return <p>Loading...</p>
   }
+
   return (
     <section>
-      <h1>Game Code: {games[0].game_code}</h1>
+      <h1>Game Code: {usersOnGame[0].game_code}</h1>
       <article>
         <ul>
-          {games[0].joined_users.map((user, index) => (
-            <li key={index}>{user}</li>
+          {usersOnGame[0].joined_users.map((user, index) => (
+            <li key={index}>Online user ID: {user}</li>
           ))}
         </ul>
-        <section>{}</section>
+
+        <section>
+          {userSkills.map((skill, index) => (
+            <button key={index}>
+              {skill.values} <small>({skill.category})</small>
+            </button>
+          ))}
+        </section>
       </article>
     </section>
   )
