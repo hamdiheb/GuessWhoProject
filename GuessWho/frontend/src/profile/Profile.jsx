@@ -2,81 +2,179 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Profile.css';
 
+const programmingLanguages = [
+    'JavaScript',
+    'TypeScript',
+    'Python',
+    'Java',
+    'C#',
+    'C++',
+    'Go'
+];
+
+const softSkills = [
+    'Communication',
+    'Teamwork',
+    'LeaderShip',
+    'Problem Solving',
+    'Adaptability',
+];
+
+const sports = [
+    'Football',
+    'Basketball',
+    'Gym',
+    'Running',
+    'Swimming',
+];
+
+const hobbies = [
+    'Reading',
+    'Gaming',
+    'Music',
+    'Travel',
+    'Cooking',
+];
+
 export default function Profile() {
-  const [fullName, setFullName] = useState('');
-  const [aboutMe, setAboutMe] = useState('');
 
   const navigate = useNavigate();
 
-  const isFormIncomplete =
-    !fullName.trim() || !aboutMe.trim();
+  const [profile, setProfile] = useState({
+    fullName: '',
+    programming: [],
+    softSkills: [],
+    sports: [],
+    hobbies: []
+  });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (isFormIncomplete) {
-      alert('Please complete all fields.');
-      return;
-    }
-    
-    try {
-      const response = await fetch('/api/profile', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          fullName,
-          aboutMe,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        alert(data.message);
-        return;
-      }
-
-      alert('Profile created successfully!');
-      navigate('/dashboard');
-    } catch (error) {
-      console.error(error);
-      alert('Cannot connect to the server.');
-    }
+  const handleInput = (e) => {
+    setProfile({
+        ...profile,
+        [e.target.name]: e.target.value,
+    });
   };
 
+  const toggleItem = (field, value) => {
+  const currentItems = profile[field];
+
+  if (currentItems.includes(value)) {
+    setProfile({
+      ...profile,
+      [field]: currentItems.filter((item) => item !== value),
+    });
+  } else {
+    setProfile({
+      ...profile,
+      [field]: [...currentItems, value],
+    });
+  }
+};
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!profile.fullName.trim()) {
+        alert('Please complete all required fields');
+        return;
+    }
+
+    console.log(profile);
+
+    alert("Profile saved!");
+
+    navigate("/dashboard");
+};
+
   return (
-    <div className="container">
+    <div className="profile-page">
+    <div className="profile-container">
+
       <h2>Create Profile</h2>
 
       <form onSubmit={handleSubmit}>
+        <h3>Player Name</h3>
         <input
           type="text"
-          placeholder="Full Name"
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
+          name="fullName"
+          placeholder="Enter your player name"
+          value={profile.fullName}
+          onChange={handleInput}
         />
 
-        <br />
-        <br />
+        <h3>Programming Languages</h3>
+         
+         <div className='checkbox-group'>
+        {programmingLanguages.map((language) => (
+          <label key={language}>
+            <input
+              type="checkbox"
+              checked={profile.programming.includes(language)}
+              onChange={() =>
+              toggleItem("programming", language)
+              }
+            />
+            {language}
+          </label>
+        ))}
+        </div>
 
-        <textarea
-          placeholder="Tell us about yourself..."
-          value={aboutMe}
-          onChange={(e) => setAboutMe(e.target.value)}
-        />
+        <h3>Soft Skills</h3>
 
-        <br />
-        <br />
+        <div className='checkbox-group'>
+        {softSkills.map((skill) => (
+          <label key={skill}>
+            <input
+              type="checkbox"
+              checked={profile.softSkills.includes(skill)}
+              onChange={() =>
+                toggleItem("softSkills", skill)
+              }
+            />
+            {skill}
+          </label>
+        ))}
+        </div>
 
-        <button
-          type="submit"
-          disabled={isFormIncomplete}
-        >
+        <h3>Sports</h3>
+
+        <div className='checkbox-group'>
+        {sports.map((sport) => (
+          <label key={sport}>
+            <input
+              type="checkbox"
+              checked={profile.sports.includes(sport)}
+              onChange={() =>
+              toggleItem("sports", sport)
+              }
+            />
+            {sport}
+          </label>
+        ))}
+        </div>
+
+        <h3>Hobbies</h3>
+        <div className='checkbox-group'>
+        {hobbies.map((hobby) => (
+          <label key={hobby}>
+            <input
+              type="checkbox"
+              checked={profile.hobbies.includes(hobby)}
+              onChange={() =>
+                toggleItem("hobbies", hobby)
+              }
+            />
+            {hobby}
+          </label>
+        ))}
+        </div>
+
+        <button type="submit">
           Save Profile
         </button>
       </form>
+      </div>
     </div>
   );
 }
+  
