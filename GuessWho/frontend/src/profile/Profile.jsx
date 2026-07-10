@@ -1,180 +1,148 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './Profile.css';
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import './Profile.css'
 
-const programmingLanguages = [
-    'JavaScript',
-    'TypeScript',
-    'Python',
-    'Java',
-    'C#',
-    'C++',
-    'Go'
-];
+const programmingLanguages = ['JavaScript', 'TypeScript', 'Python', 'Java', 'C#', 'C++', 'Go']
 
-const softSkills = [
-    'Communication',
-    'Teamwork',
-    'LeaderShip',
-    'Problem Solving',
-    'Adaptability',
-];
+const softSkills = ['Communication', 'Teamwork', 'LeaderShip', 'Problem Solving', 'Adaptability']
 
-const sports = [
-    'Football',
-    'Basketball',
-    'Gym',
-    'Running',
-    'Swimming',
-];
+const sports = ['Football', 'Basketball', 'Gym', 'Running', 'Swimming']
 
-const hobbies = [
-    'Reading',
-    'Gaming',
-    'Music',
-    'Travel',
-    'Cooking',
-];
+const hobbies = ['Reading', 'Gaming', 'Music', 'Travel', 'Cooking']
 
 export default function Profile() {
-
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const [profile, setProfile] = useState({
     fullName: '',
     programming: [],
     softSkills: [],
     sports: [],
-    hobbies: []
-  });
+    hobbies: [],
+  })
 
   const handleInput = (e) => {
     setProfile({
-        ...profile,
-        [e.target.name]: e.target.value,
-    });
-  };
+      ...profile,
+      [e.target.name]: e.target.value,
+    })
+  }
 
   const toggleItem = (field, value) => {
-  const currentItems = profile[field];
+    const currentItems = profile[field]
 
-  if (currentItems.includes(value)) {
-    setProfile({
-      ...profile,
-      [field]: currentItems.filter((item) => item !== value),
-    });
-  } else {
-    setProfile({
-      ...profile,
-      [field]: [...currentItems, value],
-    });
+    if (currentItems.includes(value)) {
+      setProfile({
+        ...profile,
+        [field]: currentItems.filter((item) => item !== value),
+      })
+    } else {
+      setProfile({
+        ...profile,
+        [field]: [...currentItems, value],
+      })
+    }
   }
-};
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     if (!profile.fullName.trim()) {
-        alert('Please complete all required fields');
-        return;
+      alert('Please complete all required fields')
+      return
     }
 
-    console.log(profile);
+    const userId = localStorage.getItem('currentUserId')
 
-    alert("Profile saved!");
+    const profileToSave = {
+      ...profile,
+      userId,
+    }
 
-    navigate("/dashboard");
-};
+    console.log(profileToSave)
+
+    // alert("Profile saved!");
+
+    // navigate("/dashboard");
+  }
 
   return (
     <div className="profile-page">
-    <div className="profile-container">
+      <div className="profile-container">
+        <h2>Create Profile</h2>
 
-      <h2>Create Profile</h2>
+        <form onSubmit={handleSubmit}>
+          <h3>Player Name</h3>
+          <input
+            type="text"
+            name="fullName"
+            placeholder="Enter your player name"
+            value={profile.fullName}
+            onChange={handleInput}
+          />
 
-      <form onSubmit={handleSubmit}>
-        <h3>Player Name</h3>
-        <input
-          type="text"
-          name="fullName"
-          placeholder="Enter your player name"
-          value={profile.fullName}
-          onChange={handleInput}
-        />
+          <h3>Programming Languages</h3>
 
-        <h3>Programming Languages</h3>
-         
-         <div className='checkbox-group'>
-        {programmingLanguages.map((language) => (
-          <label key={language}>
-            <input
-              type="checkbox"
-              checked={profile.programming.includes(language)}
-              onChange={() =>
-              toggleItem("programming", language)
-              }
-            />
-            {language}
-          </label>
-        ))}
-        </div>
+          <div className="checkbox-group">
+            {programmingLanguages.map((language) => (
+              <label key={language}>
+                <input
+                  type="checkbox"
+                  checked={profile.programming.includes(language)}
+                  onChange={() => toggleItem('programming', language)}
+                />
+                {language}
+              </label>
+            ))}
+          </div>
 
-        <h3>Soft Skills</h3>
+          <h3>Soft Skills</h3>
 
-        <div className='checkbox-group'>
-        {softSkills.map((skill) => (
-          <label key={skill}>
-            <input
-              type="checkbox"
-              checked={profile.softSkills.includes(skill)}
-              onChange={() =>
-                toggleItem("softSkills", skill)
-              }
-            />
-            {skill}
-          </label>
-        ))}
-        </div>
+          <div className="checkbox-group">
+            {softSkills.map((skill) => (
+              <label key={skill}>
+                <input
+                  type="checkbox"
+                  checked={profile.softSkills.includes(skill)}
+                  onChange={() => toggleItem('softSkills', skill)}
+                />
+                {skill}
+              </label>
+            ))}
+          </div>
 
-        <h3>Sports</h3>
+          <h3>Sports</h3>
 
-        <div className='checkbox-group'>
-        {sports.map((sport) => (
-          <label key={sport}>
-            <input
-              type="checkbox"
-              checked={profile.sports.includes(sport)}
-              onChange={() =>
-              toggleItem("sports", sport)
-              }
-            />
-            {sport}
-          </label>
-        ))}
-        </div>
+          <div className="checkbox-group">
+            {sports.map((sport) => (
+              <label key={sport}>
+                <input
+                  type="checkbox"
+                  checked={profile.sports.includes(sport)}
+                  onChange={() => toggleItem('sports', sport)}
+                />
+                {sport}
+              </label>
+            ))}
+          </div>
 
-        <h3>Hobbies</h3>
-        <div className='checkbox-group'>
-        {hobbies.map((hobby) => (
-          <label key={hobby}>
-            <input
-              type="checkbox"
-              checked={profile.hobbies.includes(hobby)}
-              onChange={() =>
-                toggleItem("hobbies", hobby)
-              }
-            />
-            {hobby}
-          </label>
-        ))}
-        </div>
+          <h3>Hobbies</h3>
+          <div className="checkbox-group">
+            {hobbies.map((hobby) => (
+              <label key={hobby}>
+                <input
+                  type="checkbox"
+                  checked={profile.hobbies.includes(hobby)}
+                  onChange={() => toggleItem('hobbies', hobby)}
+                />
+                {hobby}
+              </label>
+            ))}
+          </div>
 
-        <button type="submit">
-          Save Profile
-        </button>
-      </form>
+          <button type="submit">Save Profile</button>
+        </form>
       </div>
     </div>
-  );
+  )
 }
-  
