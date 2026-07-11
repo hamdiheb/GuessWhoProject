@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./SignIn.module.css";
-import { supabase } from "../../../backend/server";
 
 
 
 function SignIn() {
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -25,6 +25,8 @@ function SignIn() {
   }
 
    try {
+    console.log("Submitting login...");
+
     const response = await fetch("http://localhost:3000/api/signin", {
       method: "POST",
       headers: {
@@ -42,7 +44,8 @@ function SignIn() {
       setErrorMessage(data.message);
       return;
     }
-    localStorage.setItem("currentUserId", data.id);
+
+localStorage.setItem("currentUserId", String(data.id));
 
     setSuccessMessage("Welcome back!");
 
@@ -95,9 +98,12 @@ function SignIn() {
     </div>
   )}
 
-  <button className={styles.submit} type="submit">
-    Sign In
-  </button>
+  <button
+  className={styles.submit}
+  type="submit"
+  >
+  Sign In
+</button>
 </form>
 
       <div className={styles.signupLink}>

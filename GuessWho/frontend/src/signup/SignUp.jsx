@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styles from './SignUp.module.css'
-import { supabase } from '../../../backend/server'
 import email_icon from './Assets_SignUp/email.jpg'
 import user_icon from './Assets_SignUp/user.jpg'
 import password_icon from './Assets_SignUp/password.jpg'
@@ -18,43 +17,44 @@ function SignUp() {
   const isFormIncomplete = !username.trim() || !email.trim() || !password.trim()
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setErrorMessage('')
-    setSuccessMessage('')
+  e.preventDefault();
 
-    if (isFormIncomplete) {
-      setErrorMessage('All fields are required.')
-      return
-    }
+  setErrorMessage("");
+  setSuccessMessage("");
 
-    try {
-      const { data, error } = await supabase
-        .from('users')
-        .insert({
-          username,
-          email,
-          password,
-        })
-        .select()
-        .single()
-
-      if (error) {
-        setErrorMessage(error.message)
-        return
-      }
-
-      localStorage.setItem('currentUserId', data.id)
-
-      setSuccessMessage('Account created successfully!')
-
-      setTimeout(() => {
-        navigate('/profile')
-      }, 1500)
-    } catch (error) {
-      console.error(error)
-      setErrorMessage('Cannot connect to the server')
-    }
+  if (isFormIncomplete) {
+    setErrorMessage("All fields are required.");
+    return;
   }
+
+  try {
+    const response = await fetch("http://localhost:3000/api/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username,
+        email,
+        password,
+      }),
+    });
+
+    const data = await response.json();
+
+    console.log(data);
+
+    if (!response.ok) {
+      setErrorMessage(data.message);
+      return;
+    }
+
+    setSuccessMessage("Account created successfully!");
+  } catch (error) {
+    console.error(error);
+    setErrorMessage("Cannot connect to the server");
+  }
+};
 
   return (
     <div className={styles.container}>
