@@ -1,0 +1,146 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background: #f4f6f9;
+}
+
+.container {
+  width: 420px;
+  background: #fff;
+  margin: 60px auto;
+  padding: 40px 35px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.text {
+  font-size: 32px;
+  font-weight: 700;
+  color: #333;
+}
+
+.underline {
+  width: 70px;
+  height: 4px;
+  background: #4f46e5;
+  border-radius: 5px;
+  margin: 10px auto 0;
+}
+
+.inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.input {
+  display: flex;
+  align-items: center;
+  background: #f7f8fc;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 0 15px;
+  transition: 0.3s;
+}
+
+.input:focus-within {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+.input img {
+  width: 22px;
+  height: 22px;
+  opacity: 0.6;
+  margin-right: 12px;
+}
+
+.input input {
+  width: 100%;
+  height: 55px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 16px;
+  color: #333;
+}
+
+.input input::placeholder {
+  color: #999;
+}
+
+.submit {
+  width: 100%;
+  height: 52px;
+  margin-top: 30px;
+  border: none;
+  border-radius: 10px;
+  background: #4f46e5;
+  color: white;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.submit:hover:not(:disabled) {
+  background: #4338ca;
+}
+
+.submit:disabled {
+  background: #c7c7c7;
+  cursor: not-allowed;
+}
+
+.success-message {
+  margin-top: 20px;
+  text-align: center;
+  color: #16a34a;
+  font-weight: 500;
+}
+
+.error-message {
+  margin-top: 20px;
+  text-align: center;
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.login-link {
+  margin-top: 25px;
+  text-align: center;
+  color: #666;
+  font-size: 15px;
+}
+
+.login-link span {
+  color: #4f46e5;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.login-link span:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 500px) {
+  .container {
+    width: 92%;
+    margin: 30px auto;
+    padding: 30px 20px;
+  }
+
+  .text {
+    font-size: 28px;
+  }
+}

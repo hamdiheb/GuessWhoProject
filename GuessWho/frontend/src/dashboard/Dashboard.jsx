@@ -3,59 +3,87 @@ import { supabase } from "../../../backend/server";
 import styles from "./Dashboard.module.css";
 import { useNavigate } from "react-router-dom";
 
+
 function Dashboard() {
-  const [gameId, setGameId] = useState("");
-  const [showJoin, setShowJoin] = useState(false);
-  const [idInput, setIdInput] = useState("");
-  const [user, setUser] = useState(null);
-  const [roomName, setRoomName] = useState("");
-  const navigate = useNavigate();
+  const [gameId, setGameId] = useState('')
+  const [showJoin, setShowJoin] = useState(false)
+  const [idInput, setIdInput] = useState('')
+  const [user, setUser] = useState(null)
+  const [roomName, setRoomName] = useState('')
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchUser = async () => {
-      const userId = localStorage.getItem("currentUserId");
-      if (!userId) return;
+      const userId = localStorage.getItem('currentUserId')
+      if (!userId) return
 
       const { data, error } = await supabase
-        .from("users")
-        .select("username")
-        .eq("id", userId)
-        .single();
+        .from('users')
+        .select('username')
+        .eq('id', userId)
+        .single()
 
       if (error) {
-        console.error(error);
-        return;
+        console.error(error)
+        return
       }
 
-      setUser(data);
-    };
+      setUser(data)
+    }
 
-    fetchUser();
-  }, []);
+    fetchUser()
+  }, [])
 
   // Function
-  const handleHost = () => {
+  const handleHost = async () => {
     if (!roomName) {
-      alert("Please enter a room name.");
-      return;
+      alert('Please enter a room name.')
+      return
     }
-    const randomId = Math.floor(1000 + Math.random() * 9000);
-    setGameId(randomId);
-    setShowJoin(false);
-    navigate(`/game-room/${randomId}`, { state: { roomName: roomName } });
-  };
+
+    const hostId = localStorage.getItem('currentUserId')
+    if (!hostId) {
+      alert('You must be logged in to host a game.')
+      return
+    }
+
+    const randomId = Math.floor(1000 + Math.random() * 9000)
+
+    const { data, error } = await supabase
+      .from('game')
+      .insert({
+        game_name: roomName,
+        game_code: randomId,
+        host_id: hostId,
+      })
+      .select()
+      .single()
+
+    if (error) {
+      console.error(error)
+      alert('Failed to create game: ' + error.message)
+      return
+    }
+
+    setGameId(randomId)
+    setShowJoin(false)
+    navigate(`/Gameplay`, { state: { roomName: roomName, gameId: data.id } })
+  }
+
   const handleJoinClick = () => {
-    setShowJoin(true);
-    setGameId("");
-  };
+    setShowJoin(true)
+    setGameId('')
+  }
   const handleJoinSubmit = (e) => {
-    e.preventDefault();
-    if (!idInput) {
-      alert("Please enter Game ID.");
-      return;
-    }
-    alert("Joining game with ID: " + idInput);
-  };
+    // e.preventDefault()
+    // if (!idInput) {
+    //   alert('Please enter Game ID.')
+    //   return
+    // }
+    // alert('Joining game with ID: ' + idInput)
+
+    navigate('/Gameplay')
+  }
 
   return (
     <div className={styles.page}>
@@ -86,6 +114,7 @@ function Dashboard() {
         <button className={styles.submit} onClick={handleJoinClick}>
           {" "}
           Join a Game{" "}
+     
         </button>
       </div>
       {gameId && (
@@ -108,12 +137,14 @@ function Dashboard() {
           <button className={styles.submit} type="submit">
             {" "}
             Join{" "}
+
           </button>
         </form>
       )}
     </div>
     </div>
   );
+
 }
 
-export default Dashboard;
+export default Dashboard

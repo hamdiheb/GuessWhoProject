@@ -3,105 +3,108 @@ import { useNavigate } from 'react-router-dom';
 import styles from './Profile.module.css';
 import Container from "../components/Container/Container";
 
-const programmingLanguages = [
-    'JavaScript',
-    'TypeScript',
-    'Python',
-    'Java',
-    'C#',
-    'C++',
-    'Go'
-];
 
-const softSkills = [
-    'Communication',
-    'Teamwork',
-    'LeaderShip',
-    'Problem Solving',
-    'Adaptability',
-];
+const programmingLanguages = ['JavaScript', 'TypeScript', 'Python', 'Java', 'C#', 'C++', 'Go']
 
-const sports = [
-    'Football',
-    'Basketball',
-    'Gym',
-    'Running',
-    'Swimming',
-];
+const softSkills = ['Communication', 'Teamwork', 'LeaderShip', 'Problem Solving', 'Adaptability']
 
-const hobbies = [
-    'Reading',
-    'Gaming',
-    'Music',
-    'Travel',
-    'Cooking',
-];
+const sports = ['Football', 'Basketball', 'Gym', 'Running', 'Swimming']
+
+const hobbies = ['Reading', 'Gaming', 'Music', 'Travel', 'Cooking']
 
 export default function Profile() {
-
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const [profile, setProfile] = useState({
     fullName: '',
     programming: [],
     softSkills: [],
     sports: [],
-    hobbies: []
-  });
+    hobbies: [],
+  })
 
   const handleInput = (e) => {
     setProfile({
-        ...profile,
-        [e.target.name]: e.target.value,
-    });
-  };
+      ...profile,
+      [e.target.name]: e.target.value,
+    })
+  }
 
   const toggleItem = (field, value) => {
-  const currentItems = profile[field];
+    const currentItems = profile[field]
 
-  if (currentItems.includes(value)) {
-    setProfile({
-      ...profile,
-      [field]: currentItems.filter((item) => item !== value),
-    });
-  } else {
-    setProfile({
-      ...profile,
-      [field]: [...currentItems, value],
-    });
+    if (currentItems.includes(value)) {
+      setProfile({
+        ...profile,
+        [field]: currentItems.filter((item) => item !== value),
+      })
+    } else {
+      setProfile({
+        ...profile,
+        [field]: [...currentItems, value],
+      })
+    }
   }
-};
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault()
 
     if (!profile.fullName.trim()) {
-        alert('Please complete all required fields');
-        return;
+      alert('Please complete all required fields')
+      return
     }
 
-    console.log(profile);
+    const userId = localStorage.getItem('currentUserId')
 
-    alert("Profile saved!");
+    if (!userId) {
+      alert('You must be logged in to save a profile')
+      return
+    }
 
-    navigate("/dashboard");
-};
+    const skills = [
+      { category: 'programming', values: profile.programming },
+      { category: 'softSkills', values: profile.softSkills },
+      { category: 'sports', values: profile.sports },
+      { category: 'hobbies', values: profile.hobbies },
+    ]
+
+    const { data, error } = await supabase
+      .from('users')
+      .update({
+        full_name: profile.fullName,
+        skills: skills,
+      })
+      .eq('id', userId)
+      .select()
+
+    if (error) {
+      console.log('message:', error.message)
+      console.log('details:', error.details)
+      console.log('hint:', error.hint)
+      console.log('code:', error.code)
+      alert('Failed to save profile: ' + error.message)
+      return
+    }
+
+    navigate('/dashboard')
+  }
 
   return (
     <div className={styles.profilePage}>
     <Container className={styles.profileContainer}>
 
-      <h2>Create Profile</h2>
 
-      <form onSubmit={handleSubmit}>
-        <h3>Player Name</h3>
-        <input
-          type="text"
-          name="fullName"
-          placeholder="Enter your player name"
-          value={profile.fullName}
-          onChange={handleInput}
-        />
+        <form onSubmit={handleSubmit}>
+          <h3>Player Name</h3>
+          <input
+            type="text"
+            name="fullName"
+            placeholder="Enter your player name"
+            value={profile.fullName}
+            onChange={handleInput}
+          />
+
+          <h3>Programming Languages</h3>
 
         <h3>Programming Languages</h3>
          
@@ -120,7 +123,8 @@ export default function Profile() {
         ))}
         </div>
 
-        <h3>Soft Skills</h3>
+
+          <h3>Soft Skills</h3>
 
         <div className={styles.checkboxGroup}>
         {softSkills.map((skill) => (
@@ -137,7 +141,8 @@ export default function Profile() {
         ))}
         </div>
 
-        <h3>Sports</h3>
+
+          <h3>Sports</h3>
 
         <div className={styles.checkboxGroup}>
         {sports.map((sport) => (
@@ -175,7 +180,7 @@ export default function Profile() {
         </button>
       </form>
       </Container>
+
     </div>
-  );
+  )
 }
-  
