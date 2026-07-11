@@ -1,95 +1,61 @@
-.dashboardContainer {
-  max-width: 700px;
-  margin: 0 auto;
-  margin-top: 80px;
-  padding: 30px;
-  background: #fff;
-  border-radius: 15px;
-  box-shadow:0 5px 20px rgba(0, 0, 0, 0.08)
-}
-
 .page {
-  min-height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  padding-top: 80px;
+  align-items: center;
+  height: 100vh;
+  background-color: #f4f7f6;
 }
 
-.header {
-  margin-bottom: 40px;
+.dashboardContainer {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 350px;
 }
 
-.text {
- color: #2563eb;
-  font-size: 34px;
-  font-weight: 700;
+.header .text {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
 }
 
 .underline {
-    background: #2563eb;
-}
-
-.buttonsSection {
-  margin-bottom: 30px;
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-}
-
-.submit {
-  background: #2563eb;
-  color: white;
-  padding: 10px 25px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 15px;
-  font-weight: 600;
-  transition: opacity 0.2s;
-}
-
-.submit:hover {
-  opacity: 0.9;
-}
-
-.gameIdBox {
-  margin: 30px auto;
-  padding: 15px;
-  background: #f8f9fc;
-  border: 2px solid #ddd;
-  border-radius: 10px;
-  color: #333;
+  height: 3px;
+  width: 50px;
+  background: #3498db;
+  margin: 10px auto;
 }
 
 .inputs {
   margin: 20px 0;
 }
 
-.input {
-  background: #f8f9fc;
-  border: 2px solid #ddd;
-  border-radius: 10px;
-  padding: 14px;
-}
-
 .input input {
   width: 100%;
-  border: none;
-  outline: none;
-  background: transparent;
-  color: #333;
-  font-size: 16px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
-.input:focus-within {
-  border-color: #4ade80;
-}
-
-.userName {
-  color: #888;
-  font-weight: 600;
+.buttonsSection {
   display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.submit {
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  background-color: #3498db;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.submit:hover {
+  background-color: #2980b9;
 }
