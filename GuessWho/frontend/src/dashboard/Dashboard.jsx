@@ -1,150 +1,78 @@
-import { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { supabase } from "../../../backend/server";
 import styles from "./Dashboard.module.css";
 import { useNavigate } from "react-router-dom";
 
-
 function Dashboard() {
-  const [gameId, setGameId] = useState('')
-  const [showJoin, setShowJoin] = useState(false)
-  const [idInput, setIdInput] = useState('')
-  const [user, setUser] = useState(null)
-  const [roomName, setRoomName] = useState('')
-  const navigate = useNavigate()
+  const [roomName, setRoomName] = useState("");
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const userId = localStorage.getItem('currentUserId')
-      if (!userId) return
-
-      const { data, error } = await supabase
-        .from('users')
-        .select('username')
-        .eq('id', userId)
-        .single()
-
-      if (error) {
-        console.error(error)
-        return
-      }
-
-      setUser(data)
-    }
-
-    fetchUser()
-  }, [])
-
-  // Function
   const handleHost = async () => {
     if (!roomName) {
-      alert('Please enter a room name.')
-      return
+      alert("Please enter a room name.");
+      return;
     }
 
-    const hostId = localStorage.getItem('currentUserId')
+    const hostId = localStorage.getItem("currentUserId");
     if (!hostId) {
-      alert('You must be logged in to host a game.')
-      return
+      alert("You must be logged in to host a game.");
+      return;
     }
 
-    const randomId = Math.floor(1000 + Math.random() * 9000)
+    const randomCode = Math.floor(1000 + Math.random() * 9000);
 
     const { data, error } = await supabase
-      .from('game')
+      .from("game")
       .insert({
         game_name: roomName,
-        game_code: randomId,
+        game_code: randomCode,
         host_id: hostId,
       })
       .select()
-      .single()
+      .single();
 
     if (error) {
-      console.error(error)
-      alert('Failed to create game: ' + error.message)
-      return
+      alert("Failed to create game: " + error.message);
+      return;
     }
 
-    setGameId(randomId)
-    setShowJoin(false)
-    navigate(`/Gameplay`, { state: { roomName: roomName, gameId: data.id } })
-  }
+    navigate(`/host-setup/${randomCode}`, { state: { gameId: data.id } });
+  };
 
   const handleJoinClick = () => {
-    setShowJoin(true)
-    setGameId('')
-  }
-  const handleJoinSubmit = (e) => {
-    // e.preventDefault()
-    // if (!idInput) {
-    //   alert('Please enter Game ID.')
-    //   return
-    // }
-    // alert('Joining game with ID: ' + idInput)
-
-    navigate('/Gameplay')
-  }
+    navigate("/join-game");
+  };
 
   return (
     <div className={styles.page}>
-    <div className={styles.dashboardContainer}>
-      {user && <div className={styles.userName}>Welcome, {user.username}</div>}
+      <div className={styles.dashboardContainer}>
+        <div className={styles.header}>
+          <div className={styles.text}>Dashboard</div>
+          <div className={styles.underline}></div>
+        </div>
 
-      <div className={styles.header}>
-        <div className={styles.text}>Dashboard</div>
-        <div className={styles.underline}></div>
-      </div>
-      {!showJoin && !gameId && (
-          <div className={styles.inputs}>
-              <div className={styles.input}>
+        <div className={styles.inputs}>
+          <div className={styles.input}>
             <input
               type="text"
               placeholder="Enter Room Name"
               value={roomName}
               onChange={(e) => setRoomName(e.target.value)}
             />
-            </div>
-        </div>
-      )}
-      <div className={styles.buttonsSection}>
-        <button className={styles.submit} onClick={handleHost}>
-          {" "}
-          Host a Game{" "}
-        </button>
-        <button className={styles.submit} onClick={handleJoinClick}>
-          {" "}
-          Join a Game{" "}
-     
-        </button>
-      </div>
-      {gameId && (
-        <div className={styles.gameIdBox}>
-          Room: {roomName} | Your Game ID: {gameId}
-        </div>
-      )}
-      {showJoin && (
-        <form onSubmit={handleJoinSubmit}>
-          <div className={styles.inputs}>
-          <div className={styles.input}>
-              <input
-                type="text"
-                placeholder="Enter Game ID"
-                value={idInput}
-                onChange={(e) => setIdInput(e.target.value)}
-              />
-            </div>
           </div>
-          <button className={styles.submit} type="submit">
-            {" "}
-            Join{" "}
+        </div>
 
+        <div className={styles.buttonsSection}>
+          <button className={styles.submit} onClick={handleHost}>
+            Host a Game
           </button>
-        </form>
-      )}
-    </div>
+          <button className={styles.submit} onClick={handleJoinClick}>
+            Join a Game
+          </button>
+        </div>
+      </div>
     </div>
   );
-
 }
 
-export default Dashboard
+export default Dashboard;
