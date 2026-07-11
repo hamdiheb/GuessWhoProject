@@ -1,6 +1,14 @@
-import { createClient } from '@supabase/supabase-js'
+import express from "express";
+import cors from "cors";
+import authRoutes from "./routes/authRoutes.js";
 
-const supabaseUrl = 'https://pacytunlhrcrbcrjnnvh.supabase.co'
-const supabaseKey = 'sb_publishable_bAki4Hu7w-DB97Je_8xcbQ_jyrzsDVl'
+const app = express();
 
-export const supabase = createClient(supabaseUrl, supabaseKey)
+app.use(cors());
+app.use(express.json());
+
+app.use("/api", authRoutes);
+
+app.listen(3000, () => {
+  console.log("Server running on http://localhost:3000");
+});
