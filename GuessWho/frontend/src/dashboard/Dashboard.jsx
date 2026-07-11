@@ -66,7 +66,7 @@ function Dashboard() {
 
     setGameId(randomId)
     setShowJoin(false)
-    navigate(`/game-room/${randomId}`, { state: { roomName: roomName, gameId: data.id } })
+    navigate(`/Gameplay`, { state: { roomName: roomName, gameId: data.id } })
   }
 
   const handleJoinClick = () => {
@@ -74,12 +74,14 @@ function Dashboard() {
     setGameId('')
   }
   const handleJoinSubmit = (e) => {
-    e.preventDefault()
-    if (!idInput) {
-      alert('Please enter Game ID.')
-      return
-    }
-    alert('Joining game with ID: ' + idInput)
+    // e.preventDefault()
+    // if (!idInput) {
+    //   alert('Please enter Game ID.')
+    //   return
+    // }
+    // alert('Joining game with ID: ' + idInput)
+
+    navigate('/Gameplay')
   }
 
   return (
