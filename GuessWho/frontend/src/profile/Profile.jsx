@@ -1,7 +1,8 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { supabase } from '../../../backend/server'
-import './Profile.css'
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import styles from './Profile.module.css';
+import Container from "../components/Container/Container";
+
 
 const programmingLanguages = ['JavaScript', 'TypeScript', 'Python', 'Java', 'C#', 'C++', 'Go']
 
@@ -89,9 +90,9 @@ export default function Profile() {
   }
 
   return (
-    <div className="profile-page">
-      <div className="profile-container">
-        <h2>Create Profile</h2>
+    <div className={styles.profilePage}>
+    <Container className={styles.profileContainer}>
+
 
         <form onSubmit={handleSubmit}>
           <h3>Player Name</h3>
@@ -105,66 +106,81 @@ export default function Profile() {
 
           <h3>Programming Languages</h3>
 
-          <div className="checkbox-group">
-            {programmingLanguages.map((language) => (
-              <label key={language}>
-                <input
-                  type="checkbox"
-                  checked={profile.programming.includes(language)}
-                  onChange={() => toggleItem('programming', language)}
-                />
-                {language}
-              </label>
-            ))}
-          </div>
+        <h3>Programming Languages</h3>
+         
+         <div className={styles.checkboxGroup}>
+        {programmingLanguages.map((language) => (
+          <label key={language}>
+            <input
+              type="checkbox"
+              checked={profile.programming.includes(language)}
+              onChange={() =>
+              toggleItem("programming", language)
+              }
+            />
+            {language}
+          </label>
+        ))}
+        </div>
+
 
           <h3>Soft Skills</h3>
 
-          <div className="checkbox-group">
-            {softSkills.map((skill) => (
-              <label key={skill}>
-                <input
-                  type="checkbox"
-                  checked={profile.softSkills.includes(skill)}
-                  onChange={() => toggleItem('softSkills', skill)}
-                />
-                {skill}
-              </label>
-            ))}
-          </div>
+        <div className={styles.checkboxGroup}>
+        {softSkills.map((skill) => (
+          <label key={skill}>
+            <input
+              type="checkbox"
+              checked={profile.softSkills.includes(skill)}
+              onChange={() =>
+                toggleItem("softSkills", skill)
+              }
+            />
+            {skill}
+          </label>
+        ))}
+        </div>
+
 
           <h3>Sports</h3>
 
-          <div className="checkbox-group">
-            {sports.map((sport) => (
-              <label key={sport}>
-                <input
-                  type="checkbox"
-                  checked={profile.sports.includes(sport)}
-                  onChange={() => toggleItem('sports', sport)}
-                />
-                {sport}
-              </label>
-            ))}
-          </div>
+        <div className={styles.checkboxGroup}>
+        {sports.map((sport) => (
+          <label key={sport}>
+            <input
+              type="checkbox"
+              checked={profile.sports.includes(sport)}
+              onChange={() =>
+              toggleItem("sports", sport)
+              }
+            />
+            {sport}
+          </label>
+        ))}
+        </div>
 
-          <h3>Hobbies</h3>
-          <div className="checkbox-group">
-            {hobbies.map((hobby) => (
-              <label key={hobby}>
-                <input
-                  type="checkbox"
-                  checked={profile.hobbies.includes(hobby)}
-                  onChange={() => toggleItem('hobbies', hobby)}
-                />
-                {hobby}
-              </label>
-            ))}
-          </div>
+        <h3>Hobbies</h3>
+       <div className={styles.checkboxGroup}>
+        {hobbies.map((hobby) => (
+          <label key={hobby}>
+            <input
+              type="checkbox"
+              checked={profile.hobbies.includes(hobby)}
+              onChange={() =>
+                toggleItem("hobbies", hobby)
+              }
+            />
+            {hobby}
+          </label>
+        ))}
+        </div>
 
-          <button type="submit">Save Profile</button>
-        </form>
-      </div>
+        <button type="submit">
+          Save Profile
+        </button>
+      </form>
+      </Container>
+
     </div>
   )
 }
