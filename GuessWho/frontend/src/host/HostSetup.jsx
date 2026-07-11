@@ -52,7 +52,7 @@ function HostSetup() {
         <button onClick={handleAddQuestion}>Add Question</button>
       </div>
 
-      <button className={styles.launchButton} onClick={() => navigate('/Gameplay')}>
+      <button className={styles.launchButton} onClick={() => navigate(`/Gameplay/${gameId}`)}>
         Launch Game
       </button>
     </div>
