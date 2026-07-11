@@ -1,39 +1,39 @@
-import React, { useState } from "react";
-import { supabase } from "../../../backend/server";
-import styles from "./HostSetup.module.css";
-import { useParams, useLocation, useNavigate } from "react-router-dom";
+import React, { useState } from 'react'
+import { supabase } from '../../../backend/server'
+import styles from './HostSetup.module.css'
+import { useParams, useLocation, useNavigate } from 'react-router-dom'
 
 function HostSetup() {
-  const { gameCode } = useParams();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const gameId = location.state?.gameId;
+  const { gameCode } = useParams()
+  const location = useLocation()
+  const navigate = useNavigate()
+  const gameId = location.state?.gameId
 
-  const [question, setQuestion] = useState("");
+  const [question, setQuestion] = useState('')
 
   const handleAddQuestion = async () => {
-    if (!question) return;
+    if (!question) return
 
     const { data: currentGame } = await supabase
-      .from("game")
-      .select("game_questions")
-      .eq("id", gameId)
-      .single();
-    const currentQuestions = currentGame?.game_questions || [];
-    const updatedQuestions = [...currentQuestions, question];
+      .from('game')
+      .select('game_questions')
+      .eq('id', gameId)
+      .single()
+    const currentQuestions = currentGame?.game_questions || []
+    const updatedQuestions = [...currentQuestions, question]
 
     const { error } = await supabase
-      .from("game")
+      .from('game')
       .update({ game_questions: updatedQuestions })
-      .eq("id", gameId);
+      .eq('id', gameId)
 
     if (error) {
-      alert("Error adding question: " + error.message);
+      alert('Error adding question: ' + error.message)
     } else {
-      setQuestion("");
-      alert("Question added!");
+      setQuestion('')
+      alert('Question added!')
     }
-  };
+  }
 
   return (
     <div className={styles.container}>
@@ -52,14 +52,11 @@ function HostSetup() {
         <button onClick={handleAddQuestion}>Add Question</button>
       </div>
 
-      <button
-        className={styles.launchButton}
-        onClick={() => navigate("/Gameplay")}
-      >
+      <button className={styles.launchButton} onClick={() => navigate('/Gameplay')}>
         Launch Game
       </button>
     </div>
-  );
+  )
 }
 
-export default HostSetup;
+export default HostSetup

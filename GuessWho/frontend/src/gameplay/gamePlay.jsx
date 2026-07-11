@@ -21,10 +21,13 @@ export default function Gameplay() {
     return <p className="loading">Loading...</p>
   }
 
-  function nextQuestion() {
-    setQuestionIndex((prev) => prev + 1)
-  }
   const questions = gameQuestions[0].game_questions
+
+  function nextQuestion() {
+    if (questionIndex < questions.length - 1) {
+      setQuestionIndex((prev) => prev + 1)
+    }
+  }
   return (
     <section className="gameplay">
       <div className="game-card">
