@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./SignIn.module.css";
-import { supabase } from "../../../backend/server";
-
-
 
 function SignIn() {
   const [email, setEmail] = useState("");
@@ -14,46 +11,49 @@ function SignIn() {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  setErrorMessage("");
-  setSuccessMessage("");
+    setErrorMessage("");
+    setSuccessMessage("");
 
-  if (!email.trim() || !password.trim()) {
-    setErrorMessage("All fields are required.");
-    return;
-  }
-
-   try {
-    const response = await fetch("http://localhost:3000/api/signin", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      setErrorMessage(data.message);
+    if (!email.trim() || !password.trim()) {
+      setErrorMessage("All fields are required.");
       return;
     }
-    localStorage.setItem("currentUserId", data.id);
 
-    setSuccessMessage("Welcome back!");
+    try {
+      console.log("Submitting login...");
 
-    setTimeout(() => {
-      navigate("/dashboard");
-    }, 1000);
-  } catch (err) {
-    console.error(err);
-    setErrorMessage("Cannot connect to the server.");
-  }
-};
+      const response = await fetch("http://localhost:3000/api/signin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setErrorMessage(data.message);
+        return;
+      }
+
+      localStorage.setItem("currentUserId", String(data.id));
+
+      setSuccessMessage("Welcome back!");
+
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1000);
+    } catch (err) {
+      console.error(err);
+      setErrorMessage("Cannot connect to the server.");
+    }
+  };
 
   return (
     <div className={styles.container}>
@@ -62,49 +62,43 @@ function SignIn() {
         <div className={styles.underline}></div>
       </div>
 
-    <form onSubmit={handleSubmit}>
-  <div className={styles.inputs}>
-    <div className={styles.input}>
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-    </div>
+      <form onSubmit={handleSubmit}>
+        <div className={styles.inputs}>
+          <div className={styles.input}>
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
 
-    <div className={styles.input}>
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-    </div>
-  </div>
+          <div className={styles.input}>
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+        </div>
 
-  {successMessage && (
-    <div className={styles.successMessage}>
-      {successMessage}
-    </div>
-  )}
+        {successMessage && (
+          <div className={styles.successMessage}>{successMessage}</div>
+        )}
 
-  {errorMessage && (
-    <div className={styles.errorMessage}>
-      {errorMessage}
-    </div>
-  )}
+        {errorMessage && (
+          <div className={styles.errorMessage}>{errorMessage}</div>
+        )}
 
-  <button className={styles.submit} type="submit">
-    Sign In
-  </button>
-</form>
+        <button className={styles.submit} type="submit">
+          Sign In
+        </button>
+      </form>
 
       <div className={styles.signupLink}>
         Don't have an account?{" "}
-        <span onClick={() => navigate("/")}>
-          Sign Up
-        </span>
+        <span onClick={() => navigate("/")}>Sign Up</span>
       </div>
     </div>
   );

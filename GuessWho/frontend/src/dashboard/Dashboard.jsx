@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
-import { supabase } from "../../../backend/server";
+import React, { useState } from "react";
+/* import { supabase } from "../../../backend/server";
+ */
 import styles from "./Dashboard.module.css";
 import { useNavigate } from "react-router-dom";
 
