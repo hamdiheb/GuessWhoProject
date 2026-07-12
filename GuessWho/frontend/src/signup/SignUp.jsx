@@ -1,60 +1,65 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import styles from './SignUp.module.css'
-import email_icon from './Assets_SignUp/email.jpg'
-import user_icon from './Assets_SignUp/user.jpg'
-import password_icon from './Assets_SignUp/password.jpg'
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import styles from "./SignUp.module.css";
+import email_icon from "./Assets_SignUp/email.jpg";
+import user_icon from "./Assets_SignUp/user.jpg";
+import password_icon from "./Assets_SignUp/password.jpg";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 function SignUp() {
-  const [username, setUsername] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [successMessage, setSuccessMessage] = useState('')
-  const [errorMessage, setErrorMessage] = useState('')
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const isFormIncomplete = !username.trim() || !email.trim() || !password.trim()
+  const isFormIncomplete =
+    !username.trim() || !email.trim() || !password.trim();
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  setErrorMessage("");
-  setSuccessMessage("");
+    setErrorMessage("");
+    setSuccessMessage("");
 
-  if (isFormIncomplete) {
-    setErrorMessage("All fields are required.");
-    return;
-  }
-
-  try {
-    const response = await fetch("http://localhost:3000/api/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username,
-        email,
-        password,
-      }),
-    });
-
-    const data = await response.json();
-
-    console.log(data);
-
-    if (!response.ok) {
-      setErrorMessage(data.message);
+    if (isFormIncomplete) {
+      setErrorMessage("All fields are required.");
       return;
     }
 
-    setSuccessMessage("Account created successfully!");
-  } catch (error) {
-    console.error(error);
-    setErrorMessage("Cannot connect to the server");
-  }
-};
+    try {
+      const response = await fetch(`${API_URL}/api/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username,
+          email,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setErrorMessage(data.message || 'Something went wrong');
+        return;
+      }
+
+      setSuccessMessage("Account created successfully!");
+
+      setTimeout(() => {
+        navigate("/signin");
+      }, 1000);
+    } catch (error) {
+      console.error(error);
+      setErrorMessage("Cannot connect to the server");
+    }
+  };
 
   return (
     <div className={styles.container}>
@@ -104,20 +109,29 @@ function SignUp() {
           </div>
         </div>
 
-        {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
+        {successMessage && (
+          <div className={styles.successMessage}>{successMessage}</div>
+        )}
 
-        {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
+        {errorMessage && (
+          <div className={styles.errorMessage}>{errorMessage}</div>
+        )}
 
-        <button className={styles.submit} type="submit" disabled={isFormIncomplete}>
+        <button
+          className={styles.submit}
+          type="submit"
+          disabled={isFormIncomplete}
+        >
           Sign Up
         </button>
       </form>
 
       <div className={styles.loginLink}>
-        Already have an account? <span onClick={() => navigate('/signin')}>Sign In</span>
+        Already have an account?{" "}
+        <span onClick={() => navigate("/signin")}>Sign In</span>
       </div>
     </div>
-  )
+  );
 }
 
-export default SignUp
+export default SignUp;

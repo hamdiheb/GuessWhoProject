@@ -8,3 +8,23 @@ export async function signIn(email, password) {
     .eq("password", password)
     .single();
 }
+
+export async function getUserByEmail(email) {
+  return await supabase
+  .from('users')
+  .select('id')
+  .eq('email', email)
+  .maybeSingle()
+}
+
+export async function signUp (username, email, password) {
+  return await supabase
+  .from('users')
+  .insert({
+    username,
+    email,
+    password
+  })
+  .select('id')
+  .single();
+}
