@@ -1,11 +1,30 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../../../backend/server";
 import styles from "./Dashboard.module.css";
 import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
   const [roomName, setRoomName] = useState("");
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userId = localStorage.getItem("currentUserId");
+      if (userId) {
+        const { data, error } = await supabase
+          .from("users")
+          .select("*")
+          .eq("id", userId)
+          .single();
+
+        if (data && !error) {
+          setUser(data);  
+      }
+      }
+    };
+    fetchUser();
+  }, []);
 
   const handleHost = async () => {
     if (!roomName) {
@@ -27,6 +46,7 @@ function Dashboard() {
         game_name: roomName,
         game_code: randomCode,
         host_id: hostId,
+        joined_users: [hostId],
       })
       .select()
       .single();
@@ -36,7 +56,12 @@ function Dashboard() {
       return;
     }
 
-    navigate(`/host-setup/${randomCode}`, { state: { gameId: data.id } });
+    navigate(`/host-setup/${randomCode}`, {
+      state: {
+        gameId: data.id,
+        gameName: roomName,
+      },
+    });
   };
 
   const handleJoinClick = () => {
@@ -46,6 +71,9 @@ function Dashboard() {
   return (
     <div className={styles.page}>
       <div className={styles.dashboardContainer}>
+        {/* استفاده از ساختار user.username */}
+        {user && <div className={styles.welcome}>Welcome, {user.username}</div>}
+
         <div className={styles.header}>
           <div className={styles.text}>Dashboard</div>
           <div className={styles.underline}></div>
