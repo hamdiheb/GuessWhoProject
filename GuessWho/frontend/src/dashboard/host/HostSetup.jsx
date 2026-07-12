@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { supabase } from "../../../backend/server";
 import styles from "./HostSetup.module.css";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 
@@ -19,60 +18,49 @@ function HostSetup() {
     if (!gameId) return;
 
     const loadData = async () => {
-      const { data } = await supabase
-        .from("game")
-        .select("game_name, game_questions, joined_users")
-        .eq("id", gameId)
-        .single();
+      try {
+        const response = await fetch(
+          `http://localhost:3000/api/games/${gameId}`,
+        );
+        const data = await response.json();
 
-      if (data) {
-        setGameName(data.game_name);
-        setQuestionsList(data.game_questions || []);
+        if (data) {
+          setGameName(data.game_name);
+          setQuestionsList(data.game_questions || []);
 
-        if (data.joined_users && data.joined_users.length > 0) {
-          const { data: users } = await supabase
-            .from("users")
-            .select("username")
-            .in("id", data.joined_users);
-
-          if (users) setPlayers(users);
+          if (data.players) {
+            setPlayers(data.players);
+          }
         }
+      } catch (err) {
+        console.error("Error loading data:", err);
       }
     };
 
     loadData();
-
-    const channel = supabase
-      .channel("db-changes")
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "game",
-          filter: `id=eq.${gameId}`,
-        },
-        () => {
-          loadData();
-        },
-      )
-      .subscribe();
-
-    return () => supabase.removeChannel(channel);
   }, [gameId]);
 
   const addQuestion = async () => {
     if (question === "") return;
 
-    const newList = [...questionsList, question];
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/games/${gameId}/add-question`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question }),
+        },
+      );
 
-    await supabase
-      .from("game")
-      .update({ game_questions: newList })
-      .eq("id", gameId);
-
-    setQuestionsList(newList);
-    setQuestion("");
+      if (response.ok) {
+        const updatedGame = await response.json();
+        setQuestionsList(updatedGame.game_questions);
+        setQuestion("");
+      }
+    } catch (err) {
+      console.error("Error adding question:", err);
+    }
   };
 
   return (

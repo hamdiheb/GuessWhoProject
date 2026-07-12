@@ -1,23 +1,24 @@
 import { Routes, Route } from "react-router-dom";
-
 import SignUp from './signup/SignUp'
 import SignIn from "./signin/SignIn";
-//import Dashboard from './dashboard/Dashboard'
-//import Profile from './profile/Profile'
-//import Gameplay from './gameplay/gamePlay'
-//import HostSetup from "./host/HostSetup";
+import Dashboard from './dashboard/Dashboard'
+// import Profile from './profile/Profile'
+import Gameplay from './gameplay/gamePlay'
+import HostSetup from "./dashboard/host/HostSetup";
+import JoinGame from "./dashboard/join/JoinGame";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<SignUp />} />
       <Route path="/signin" element={<SignIn />} />
-      <Route path="/profile" element={<h1>profile</h1>} />
-      <Route path="/dashboard" element={<h1>Dashboard</h1>} />
-      <Route path="/gamePlay" element={<h1>Gameplay</h1>} />
-      <Route path="/host-setup/:gameCode" element={<h1>Host Setup</h1>} />
+      {/* <Route path="/profile" element={<Profile />} /> */}
+      <Route path="/dashboard" element={<Dashboard />} /> 
+      <Route path="/gamePlay" element={<Gameplay />} />
+      <Route path="/host-setup/:gameCode" element={<HostSetup />} />
+      <Route path="/join-game" element={<JoinGame />} />
     </Routes>
   );
 }
-
+ 
 export default App;
