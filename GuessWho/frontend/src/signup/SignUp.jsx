@@ -5,6 +5,8 @@ import email_icon from "./Assets_SignUp/email.jpg";
 import user_icon from "./Assets_SignUp/user.jpg";
 import password_icon from "./Assets_SignUp/password.jpg";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function SignUp() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -29,7 +31,7 @@ function SignUp() {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/api/signup", {
+      const response = await fetch(`${API_URL}/api/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -43,15 +45,16 @@ function SignUp() {
 
       const data = await response.json();
 
-      console.log(data);
-
       if (!response.ok) {
-        setErrorMessage(data.message);
+        setErrorMessage(data.message || "Something went wrong");
         return;
       }
-      navigate("/dashboard");
 
       setSuccessMessage("Account created successfully!");
+
+      setTimeout(() => {
+        navigate("/signin");
+      }, 1000);
     } catch (error) {
       console.error(error);
       setErrorMessage("Cannot connect to the server");
@@ -132,3 +135,4 @@ function SignUp() {
 }
 
 export default SignUp;
+git
