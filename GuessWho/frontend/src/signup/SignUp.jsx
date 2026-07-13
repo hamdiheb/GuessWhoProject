@@ -46,7 +46,7 @@ function SignUp() {
       const data = await response.json();
 
       if (!response.ok) {
-        setErrorMessage(data.message || "Something went wrong");
+        setErrorMessage(data.message || 'Something went wrong');
         return;
       }
 
@@ -135,4 +135,3 @@ function SignUp() {
 }
 
 export default SignUp;
-git
