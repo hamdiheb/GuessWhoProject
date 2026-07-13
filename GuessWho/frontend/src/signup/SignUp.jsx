@@ -5,6 +5,8 @@ import email_icon from './Assets_SignUp/email.jpg'
 import user_icon from './Assets_SignUp/user.jpg'
 import password_icon from './Assets_SignUp/password.jpg'
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 function SignUp() {
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
@@ -26,7 +28,7 @@ function SignUp() {
   }
 
   try {
-    const response = await fetch("http://localhost:3000/api/signup", {
+    const response = await fetch(`${API_BASE_URL}/api/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -47,6 +49,7 @@ function SignUp() {
       return;
     }
 
+    localStorage.setItem("currentUserId", String(data.id));
     navigate("/dashboard");
   } catch (error) {
     console.error(error);
