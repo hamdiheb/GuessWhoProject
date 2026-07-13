@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import styles from "./Dashboard.module.css";
 import { useNavigate } from "react-router-dom";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_URL = import.meta.env.VITE_API_URL;
 
 function Dashboard() {
   const [roomName, setRoomName] = useState("");
@@ -12,7 +12,7 @@ function Dashboard() {
   useEffect(() => {
     const userId = localStorage.getItem("currentUserId");
     if (userId) {
-      fetch(`${API_BASE_URL}/api/users/${userId}`)
+      fetch(`${API_URL}/api/users/${userId}`)
         .then((res) => res.json())
         .then((data) => {
           setUser(data);
@@ -36,7 +36,7 @@ function Dashboard() {
     const randomCode = Math.floor(1000 + Math.random() * 9000);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/games/create`, {
+      const response = await fetch(`${API_URL}/api/games/create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

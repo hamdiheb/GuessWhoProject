@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "../../components/Button/Button";
 import styles from "./JoinGame.module.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_URL = import.meta.env.VITE_API_URL;
 
 function JoinGame() {
   const [roomCode, setRoomCode] = useState("");
@@ -26,7 +26,7 @@ function JoinGame() {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/games/join`, {
+      const response = await fetch(`${API_URL}/api/games/join`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
