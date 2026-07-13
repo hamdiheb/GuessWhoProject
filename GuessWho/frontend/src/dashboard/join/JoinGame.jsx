@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Button from "../../components/Button/Button";
 import styles from "./JoinGame.module.css";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function JoinGame() {
   const [roomCode, setRoomCode] = useState("");
@@ -23,7 +26,7 @@ function JoinGame() {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/api/games/join", {
+      const response = await fetch(`${API_BASE_URL}/api/games/join`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -65,16 +68,16 @@ function JoinGame() {
         {message && <p className={styles.message}>{message}</p>}
 
         <div className={styles.buttonArea}>
-          <button className={styles.joinBtn} type="submit">
+          <Button type="submit">
             Join Game
-          </button>
-          <button
-            className={styles.backBtn}
+          </Button>
+          <Button
+            variant="secondary"
             type="button"
             onClick={() => navigate("/dashboard")}
           >
             Back
-          </button>
+          </Button>
         </div>
       </form>
     </div>

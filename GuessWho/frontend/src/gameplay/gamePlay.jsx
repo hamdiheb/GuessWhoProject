@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '../../../backend/server'
+// import { supabase } from '../../../backend/server'
 import './Gameplay.css'
 export default function Gameplay() {
   const [gameQuestions, setGameQuestions] = useState([])

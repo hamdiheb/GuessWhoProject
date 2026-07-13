@@ -9,7 +9,6 @@ function SignUp() {
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
 
   const navigate = useNavigate()
@@ -20,7 +19,6 @@ function SignUp() {
   e.preventDefault();
 
   setErrorMessage("");
-  setSuccessMessage("");
 
   if (isFormIncomplete) {
     setErrorMessage("All fields are required.");
@@ -49,7 +47,7 @@ function SignUp() {
       return;
     }
 
-    setSuccessMessage("Account created successfully!");
+    navigate("/dashboard");
   } catch (error) {
     console.error(error);
     setErrorMessage("Cannot connect to the server");
@@ -103,8 +101,6 @@ function SignUp() {
             />
           </div>
         </div>
-
-        {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
 
         {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
 
