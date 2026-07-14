@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./SignIn.module.css";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,9 +24,7 @@ function SignIn() {
     }
 
     try {
-      console.log("Submitting login...");
-
-      const response = await fetch("http://localhost:3000/api/signin", {
+      const response = await fetch(`${API_URL}/api/signin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
