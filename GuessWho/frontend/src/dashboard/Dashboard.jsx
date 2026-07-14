@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-/* import { supabase } from "../../../backend/server";
- */
+import { useState, useEffect } from "react";
 import styles from "./Dashboard.module.css";
 import { useNavigate } from "react-router-dom";
+
+const API_URL = import.meta.env.VITE_API_URL;
 
 function Dashboard() {
   const [roomName, setRoomName] = useState("");
@@ -10,21 +10,15 @@ function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const userId = localStorage.getItem("currentUserId");
-      if (userId) {
-        const { data, error } = await supabase
-          .from("users")
-          .select("*")
-          .eq("id", userId)
-          .single();
-
-        if (data && !error) {
-          setUser(data);  
-      }
-      }
-    };
-    fetchUser();
+    const userId = localStorage.getItem("currentUserId");
+    if (userId) {
+      fetch(`${API_URL}/api/users/${userId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setUser(data);
+        })
+        .catch((err) => console.error("Error:", err));
+    }
   }, []);
 
   const handleHost = async () => {
@@ -41,28 +35,28 @@ function Dashboard() {
 
     const randomCode = Math.floor(1000 + Math.random() * 9000);
 
-    const { data, error } = await supabase
-      .from("game")
-      .insert({
-        game_name: roomName,
-        game_code: randomCode,
-        host_id: hostId,
-        joined_users: [hostId],
-      })
-      .select()
-      .single();
+    try {
+      const response = await fetch(`${API_URL}/api/games/create`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          game_name: roomName,
+          game_code: randomCode,
+          host_id: hostId,
+          joined_users: [hostId],
+        }),
+      });
 
-    if (error) {
-      alert("Failed to create game: " + error.message);
-      return;
+      const data = await response.json();
+
+      if (!response.ok) throw new Error(data.error || "Failed to create game");
+
+      navigate(`/host-setup/${randomCode}`, {
+        state: { gameId: data.id, gameName: roomName },
+      });
+    } catch (err) {
+      alert(err.message);
     }
-
-    navigate(`/host-setup/${randomCode}`, {
-      state: {
-        gameId: data.id,
-        gameName: roomName,
-      },
-    });
   };
 
   const handleJoinClick = () => {
@@ -72,8 +66,11 @@ function Dashboard() {
   return (
     <div className={styles.page}>
       <div className={styles.dashboardContainer}>
-        {/* استفاده از ساختار user.username */}
-        {user && <div className={styles.welcome}>Welcome, {user.username}</div>}
+        {user ? (
+          <div className={styles.welcome}>Welcome, {user.username}</div>
+        ) : (
+          <div className={styles.welcome}>Loading...</div>
+        )}
 
         <div className={styles.header}>
           <div className={styles.text}>Dashboard</div>
