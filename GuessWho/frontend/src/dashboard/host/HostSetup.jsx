@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import styles from "./HostSetup.module.css";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 
 const PLAYERS_REFRESH_INTERVAL_MS = 30000;
@@ -99,19 +98,25 @@ function HostSetup() {
     }
   };
 
+  const listItemClass =
+    "py-3 px-4 bg-surface-2 border border-border-soft rounded-sm text-ink text-sm animate-item-in";
+
   return (
-    <div className={styles.mainContainer}>
-      <header className={styles.header}>
-        <h1>{gameName}</h1>
-        <p>
-          Room Code: <strong>{gameCode}</strong>
+    <div className="max-w-[900px] mx-auto my-12 px-5 animate-fade-slide-in">
+      <header className="text-center mb-8 py-8 px-6 bg-surface border border-border rounded-lg">
+        <h1 className="mb-3 text-[32px]">{gameName}</h1>
+        <p className="text-ink-dim text-sm">
+          Room Code:
+          <strong className="inline-block ml-1.5 py-1 px-3 bg-accent-soft text-accent rounded-full text-base font-bold tracking-[3px]">
+            {gameCode}
+          </strong>
         </p>
       </header>
 
-      <div className={styles.dashboard}>
-        <section className={styles.card}>
-          <h3>Questions</h3>
-          <div className={styles.inputArea}>
+      <div className="flex gap-5 flex-wrap">
+        <section className="flex-1 min-w-[280px] p-6 border border-border rounded-lg bg-surface">
+          <h3 className="mb-4 text-ink">Questions</h3>
+          <div className="flex gap-2.5 mb-4">
             <input
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
@@ -119,30 +124,40 @@ function HostSetup() {
                 if (e.key === "Enter") addQuestion();
               }}
               placeholder="Add question..."
+              className="flex-1 min-w-0 py-3 px-3.5 bg-surface-2 border border-border rounded-md text-sm text-ink placeholder:text-ink-dim outline-none transition-[border-color,box-shadow] duration-200 focus:border-accent-border focus:shadow-[0_0_0_4px_var(--color-accent-soft)]"
             />
-            <button onClick={addQuestion}>Add</button>
+            <button
+              onClick={addQuestion}
+              className="py-2.5 px-5 bg-accent text-[#17130b] border-none rounded-full text-sm font-bold cursor-pointer transition-[transform,filter] duration-200 ease-spring hover:scale-[1.04] hover:brightness-110 active:scale-[0.98]"
+            >
+              Add
+            </button>
           </div>
-          <ul className={styles.list}>
+          <ul className="list-none p-0 m-0 flex flex-col gap-2 stagger-list">
             {questionsList.map((q, i) => (
-              <li key={i}>{q}</li>
+              <li key={i} className={listItemClass}>
+                {q}
+              </li>
             ))}
           </ul>
         </section>
 
-        <section className={styles.card}>
-          <h3>Players ({players.length})</h3>
-          <ul className={styles.list}>
+        <section className="flex-1 min-w-[280px] p-6 border border-border rounded-lg bg-surface">
+          <h3 className="mb-4 text-ink">Players ({players.length})</h3>
+          <ul className="list-none p-0 m-0 flex flex-col gap-2 stagger-list">
             {players.map((p, i) => (
-              <li key={i}>{p.username}</li>
+              <li key={i} className={listItemClass}>
+                {p.username}
+              </li>
             ))}
           </ul>
         </section>
       </div>
 
       <button
-        className={styles.launchBtn}
         disabled={questionsList.length === 0 || players.length === 1}
         onClick={launchGame}
+        className="w-full mt-6 py-4 rounded-full bg-accent text-[#17130b] text-base font-bold cursor-pointer transition-[transform,filter,box-shadow,background-color,color] duration-200 ease-spring not-disabled:hover:scale-[1.02] not-disabled:hover:brightness-110 not-disabled:hover:shadow-[0_8px_24px_var(--color-accent-glow)] not-disabled:active:scale-[0.99] disabled:bg-surface-2 disabled:text-ink-dim disabled:cursor-not-allowed"
       >
         Launch Game
       </button>

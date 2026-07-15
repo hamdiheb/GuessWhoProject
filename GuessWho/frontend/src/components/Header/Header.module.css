@@ -1,0 +1,77 @@
+.header {
+  background: var(--gradient-brand);
+  box-shadow: 0 4px 20px rgba(122, 40, 200, 0.18);
+}
+
+.inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  text-decoration: none;
+}
+
+.logo {
+  width: 30px;
+  height: 30px;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.navLink {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  transition: background-color 0.15s ease;
+}
+
+.navLink:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.username {
+  color: #fff;
+  font-weight: 600;
+  opacity: 0.95;
+}
+
+.navButton {
+  color: #fff;
+}
+
+.navButton:hover {
+  background: rgba(255, 255, 255, 0.18) !important;
+}
+
+@media (max-width: 560px) {
+  .inner {
+    padding: 12px 16px;
+  }
+
+  .brand span {
+    display: none;
+  }
+
+  .username {
+    display: none;
+  }
+}
