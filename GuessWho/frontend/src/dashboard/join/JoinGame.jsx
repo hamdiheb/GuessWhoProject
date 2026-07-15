@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/Button/Button";
-import styles from "./JoinGame.module.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -49,33 +48,35 @@ function JoinGame() {
   };
 
   return (
-    <div className={styles.mainContainer}>
-      <div className={styles.header}>
-        <h1>Join a Game</h1>
+    <div className="max-w-[460px] mx-auto my-16 px-5 animate-fade-slide-in">
+      <div className="text-center mb-7">
+        <h1 className="text-[30px]">Join a Game</h1>
       </div>
 
-      <form className={styles.card} onSubmit={handleJoin}>
-        <h3>Enter your room code</h3>
-        <div className={styles.inputArea}>
+      <form
+        className="p-9 border border-border rounded-lg bg-surface"
+        onSubmit={handleJoin}
+      >
+        <h3 className="text-center mb-5 text-ink">Enter your room code</h3>
+        <div className="flex">
           <input
             type="text"
             placeholder="Enter Room Code"
             value={roomCode}
             onChange={(e) => setRoomCode(e.target.value)}
+            className="flex-1 py-3.5 px-4 bg-surface-2 border border-border rounded-md text-base text-ink placeholder:text-ink-dim placeholder:tracking-normal text-center tracking-[3px] outline-none transition-[border-color,box-shadow] duration-200 focus:border-accent-border focus:shadow-[0_0_0_4px_var(--color-accent-soft)]"
           />
         </div>
 
-        {message && <p className={styles.message}>{message}</p>}
+        {message && (
+          <p className="text-center text-danger bg-danger-soft py-2.5 px-3.5 rounded-sm mt-4 text-sm">
+            {message}
+          </p>
+        )}
 
-        <div className={styles.buttonArea}>
-          <Button type="submit">
-            Join Game
-          </Button>
-          <Button
-            variant="secondary"
-            type="button"
-            onClick={() => navigate("/dashboard")}
-          >
+        <div className="flex gap-2.5 mt-5">
+          <Button type="submit">Join Game</Button>
+          <Button variant="secondary" type="button" onClick={() => navigate("/dashboard")}>
             Back
           </Button>
         </div>

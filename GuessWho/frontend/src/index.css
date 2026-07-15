@@ -1,38 +1,148 @@
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+@import 'tailwindcss';
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+@theme {
+  /* Surfaces — lighter charcoal, not pure black */
+  --color-bg: #16151a;
+  --color-surface: #1e1d24;
+  --color-surface-2: #24232b;
+  --color-border: rgba(255, 255, 255, 0.09);
+  --color-border-soft: rgba(255, 255, 255, 0.06);
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* Text */
+  --color-ink: #f5f4f2;
+  --color-ink-muted: #a8a6b0;
+  --color-ink-dim: #716f7a;
 
-  @media (max-width: 1024px) {
-    font-size: 16px;
+  /* Accent (single, used sparingly) */
+  --color-accent: #d4a45a;
+  --color-accent-strong: #e6bb75;
+  --color-accent-soft: rgba(212, 164, 90, 0.12);
+  --color-accent-border: rgba(212, 164, 90, 0.35);
+  --color-accent-glow: rgba(212, 164, 90, 0.28);
+
+  /* Feedback, kept soft */
+  --color-success: #7fd8a6;
+  --color-success-soft: rgba(127, 216, 166, 0.12);
+  --color-danger: #e6a3a3;
+  --color-danger-soft: rgba(230, 163, 163, 0.1);
+
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+
+  --font-sans: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
+
+  --shadow-card: 0 20px 50px rgba(0, 0, 0, 0.35);
+
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --animate-fade-slide-in: fadeSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+  --animate-pulse-dot: pulseDot 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  --animate-shake: shakeX 0.45s cubic-bezier(0.4, 0, 0.2, 1) both;
+  --animate-correct-pop: correctPop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  --animate-checkmark-in: checkmarkIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+  --animate-item-in: itemIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+  --animate-confetti-fall: confettiFall 1.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseDot {
+  0% {
+    transform: scale(0.85);
+    box-shadow: 0 0 0 0 var(--color-accent-glow);
+  }
+  70% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 10px rgba(212, 164, 90, 0);
+  }
+  100% {
+    transform: scale(0.85);
+    box-shadow: 0 0 0 0 rgba(212, 164, 90, 0);
+  }
+}
+
+@keyframes shakeX {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-6px);
+  }
+  40% {
+    transform: translateX(5px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  80% {
+    transform: translateX(2px);
+  }
+}
+
+@keyframes correctPop {
+  0% {
+    transform: scale(0.97);
+  }
+  60% {
+    transform: scale(1.03);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes checkmarkIn {
+  from {
+    opacity: 0;
+    transform: scale(0.4) rotate(-20deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
+@keyframes itemIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes confettiFall {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--x, 0), 260px) rotate(360deg);
   }
 }
 
 body {
   margin: 0;
-  background: #f5f7fb;
+  background: var(--color-bg);
+  color: var(--color-ink-muted);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 #root {
@@ -42,45 +152,43 @@ body {
 }
 
 h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+h2,
+h3 {
+  color: var(--color-ink);
+  font-weight: 700;
+  letter-spacing: -0.4px;
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
+/* Small, deliberately-kept custom layer: staggered list/leaderboard
+   entrances and confetti piece placement aren't expressible cleanly
+   as reusable Tailwind utilities. */
+@layer utilities {
+  .stagger-list > *:nth-child(1) {
+    animation-delay: 0ms;
   }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
+  .stagger-list > *:nth-child(2) {
+    animation-delay: 60ms;
   }
-}
-p {
-  margin: 0;
-}
+  .stagger-list > *:nth-child(3) {
+    animation-delay: 120ms;
+  }
+  .stagger-list > *:nth-child(4) {
+    animation-delay: 180ms;
+  }
+  .stagger-list > *:nth-child(5) {
+    animation-delay: 240ms;
+  }
+  .stagger-list > *:nth-child(n + 6) {
+    animation-delay: 300ms;
+  }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+  .confetti-piece {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    width: 6px;
+    height: 12px;
+    opacity: 0;
+    animation: var(--animate-confetti-fall);
+  }
 }
