@@ -11,6 +11,7 @@ export const signIn = async (req, res) => {
 
   try {
     const { data, error } = await authService.signIn(email, password);
+    console.log(data);
 
     if (error || !data) {
       return res.status(401).json({
@@ -21,6 +22,7 @@ export const signIn = async (req, res) => {
     return res.status(200).json({
       message: "Login successful",
       id: data.id,
+      token: data.token,
     });
   } catch (err) {
     console.error(err);

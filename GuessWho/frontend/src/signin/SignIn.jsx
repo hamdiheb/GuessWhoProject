@@ -43,6 +43,7 @@ function SignIn() {
       }
 
       localStorage.setItem("currentUserId", String(data.id));
+      localStorage.setItem("token", data.token);
 
       setSuccessMessage("Welcome back!");
 
