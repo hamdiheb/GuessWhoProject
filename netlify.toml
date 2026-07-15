@@ -1,0 +1,4 @@
+[build]
+  base = "GuessWho/frontend"
+  publish = "dist"
+  command = "npm run build"
