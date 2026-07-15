@@ -11,9 +11,9 @@ const pulseDotClass = 'w-3 h-3 rounded-full bg-accent animate-pulse-dot'
 const questionBadgeClass =
   'inline-block text-xs font-bold tracking-wide uppercase text-accent bg-accent-soft py-1.5 px-3.5 rounded-full mb-3.5'
 const questionTextClass =
-  'text-[22px] sm:text-2xl font-bold text-ink leading-snug tracking-tight my-2.5 mb-6'
+  'text-[22px] sm:text-2xl font-bold text-ink leading-snug tracking-tight my-2.5 mb-6 break-words'
 const guessAnswerClass =
-  'text-[17px] italic text-ink bg-surface-2 border border-border-soft rounded-md py-4 px-4.5 my-4'
+  'text-[17px] italic text-ink bg-surface-2 border border-border-soft rounded-md py-4 px-4.5 my-4 break-words'
 const errorClass = 'text-danger bg-danger-soft py-2.5 px-3.5 rounded-sm my-4 text-center text-sm'
 const btnPrimaryClass =
   'w-full py-[15px] rounded-full bg-accent text-[#17130b] text-[15px] font-bold cursor-pointer font-sans transition-[transform,filter,box-shadow,background-color,color] duration-200 ease-spring not-disabled:hover:scale-[1.02] not-disabled:hover:brightness-110 not-disabled:hover:shadow-[0_8px_24px_var(--color-accent-glow)] not-disabled:active:scale-[0.99] disabled:bg-surface-2 disabled:text-ink-dim disabled:cursor-not-allowed disabled:opacity-70'
@@ -295,7 +295,7 @@ export default function Gameplay() {
                   >
                     {playerName(uid).charAt(0).toUpperCase()}
                   </span>
-                  <span className="flex-1 font-semibold text-ink text-sm">{playerName(uid)}</span>
+                  <span className="flex-1 font-semibold text-ink text-sm break-words min-w-0">{playerName(uid)}</span>
                   <span className="font-bold text-accent text-sm">
                     {score} pt{score === 1 ? '' : 's'}
                   </span>

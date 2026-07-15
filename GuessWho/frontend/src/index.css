@@ -157,6 +157,7 @@ h3 {
   color: var(--color-ink);
   font-weight: 700;
   letter-spacing: -0.4px;
+  overflow-wrap: anywhere;
 }
 
 /* Small, deliberately-kept custom layer: staggered list/leaderboard

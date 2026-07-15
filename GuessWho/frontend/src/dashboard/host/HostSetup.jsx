@@ -99,7 +99,7 @@ function HostSetup() {
   };
 
   const listItemClass =
-    "py-3 px-4 bg-surface-2 border border-border-soft rounded-sm text-ink text-sm animate-item-in";
+    "py-3 px-4 bg-surface-2 border border-border-soft rounded-sm text-ink text-sm animate-item-in break-words";
 
   return (
     <div className="max-w-[900px] mx-auto my-12 px-5 animate-fade-slide-in">

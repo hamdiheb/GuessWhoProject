@@ -66,7 +66,7 @@ function Dashboard() {
     <div className="flex justify-center items-center min-h-[calc(100svh-40px)] p-5 bg-bg box-border">
       <div className="w-full max-w-[400px] bg-surface border border-border p-10 sm:p-12 rounded-lg shadow-card text-center animate-fade-slide-in">
         {user ? (
-          <div className="inline-block text-sm font-semibold text-accent bg-accent-soft rounded-full py-1.5 px-4 mb-5">
+          <div className="inline-block text-sm font-semibold text-accent bg-accent-soft rounded-full py-1.5 px-4 mb-5 break-words max-w-full">
             Welcome, {user.username}
           </div>
         ) : (

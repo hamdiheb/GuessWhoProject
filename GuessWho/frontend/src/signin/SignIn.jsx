@@ -60,7 +60,7 @@ function SignIn() {
   };
 
   return (
-    <div className="w-full max-w-md mx-4 sm:mx-auto my-8 sm:my-16 p-6 sm:p-10 bg-surface border border-border rounded-lg shadow-card animate-fade-slide-in">
+    <div className="max-w-md mx-4 sm:mx-auto my-8 sm:my-16 p-6 sm:p-10 bg-surface border border-border rounded-lg shadow-card animate-fade-slide-in">
       <div className="text-center mb-8">
         <div className="text-[32px] font-bold tracking-tight text-ink">Sign In</div>
         <div className="w-[46px] h-[3px] bg-accent mx-auto mt-3.5 rounded-full" />
