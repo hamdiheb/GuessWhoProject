@@ -8,7 +8,7 @@ export async function getGameByIdInDB(gameId) {
   return await supabase
     .from("game")
     .select(
-      "id, game_name, game_code, host_id, game_questions, game_answers, joined_users, is_started",
+      "id, game_name, game_code, host_id, game_questions, game_answers, game_guesses, game_scores, joined_users, is_started",
     )
     .eq("id", gameId)
     .single();
@@ -49,6 +49,13 @@ export async function updateAnswersInDB(gameId, answers) {
   return await supabase
     .from("game")
     .update({ game_answers: answers })
+    .eq("id", gameId);
+}
+
+export async function updateGuessesInDB(gameId, { game_guesses, game_scores }) {
+  return await supabase
+    .from("game")
+    .update({ game_guesses, game_scores })
     .eq("id", gameId);
 }
 
