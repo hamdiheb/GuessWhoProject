@@ -129,7 +129,7 @@ function HostSetup() {
             />
             <button
               onClick={addQuestion}
-              className="py-2.5 px-5 bg-accent text-[#17130b] border-none rounded-full text-sm font-bold cursor-pointer transition-[transform,filter] duration-200 ease-spring hover:scale-[1.04] hover:brightness-110 active:scale-[0.98]"
+              className="py-2.5 px-5 bg-accent text-white border-none rounded-full text-sm font-bold cursor-pointer transition-[transform,filter] duration-200 ease-spring hover:scale-[1.04] hover:brightness-110 active:scale-[0.98]"
             >
               Add
             </button>
@@ -158,7 +158,7 @@ function HostSetup() {
       <button
         disabled={questionsList.length === 0 || players.length === 1}
         onClick={launchGame}
-        className="w-full mt-6 py-4 rounded-full bg-accent text-[#17130b] text-base font-bold cursor-pointer transition-[transform,filter,box-shadow,background-color,color] duration-200 ease-spring not-disabled:hover:scale-[1.02] not-disabled:hover:brightness-110 not-disabled:hover:shadow-[0_8px_24px_var(--color-accent-glow)] not-disabled:active:scale-[0.99] disabled:bg-surface-2 disabled:text-ink-dim disabled:cursor-not-allowed"
+        className="w-full mt-6 py-4 rounded-full bg-accent text-white text-base font-bold cursor-pointer transition-[transform,filter,box-shadow,background-color,color] duration-200 ease-spring not-disabled:hover:scale-[1.02] not-disabled:hover:brightness-110 not-disabled:hover:shadow-[0_8px_24px_var(--color-accent-glow)] not-disabled:active:scale-[0.99] disabled:bg-surface-2 disabled:text-ink-dim disabled:cursor-not-allowed"
       >
         Launch Game
       </button>

@@ -103,7 +103,7 @@ function SignIn() {
 
         <button
           type="submit"
-          className="w-full block mt-7 p-3.5 rounded-full bg-accent text-[#17130b] text-base font-bold cursor-pointer transition-[transform,filter,box-shadow,background-color,color] duration-200 ease-spring not-disabled:hover:scale-[1.02] not-disabled:hover:brightness-110 not-disabled:hover:shadow-[0_8px_24px_var(--color-accent-glow)] not-disabled:active:scale-[0.99] disabled:bg-surface-2 disabled:text-ink-dim disabled:opacity-70 disabled:cursor-not-allowed disabled:shadow-none"
+          className="w-full block mt-7 p-3.5 rounded-full bg-accent text-white text-base font-bold cursor-pointer transition-[transform,filter,box-shadow,background-color,color] duration-200 ease-spring not-disabled:hover:scale-[1.02] not-disabled:hover:brightness-110 not-disabled:hover:shadow-[0_8px_24px_var(--color-accent-glow)] not-disabled:active:scale-[0.99] disabled:bg-surface-2 disabled:text-ink-dim disabled:opacity-70 disabled:cursor-not-allowed disabled:shadow-none"
         >
           Sign In
         </button>

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import Mascot from '../components/Mascot/Mascot'
 
 const API_URL = import.meta.env.VITE_API_URL
 const WAITING_POLL_INTERVAL_MS = 3000
@@ -16,7 +17,7 @@ const guessAnswerClass =
   'text-[17px] italic text-ink bg-surface-2 border border-border-soft rounded-md py-4 px-4.5 my-4 break-words'
 const errorClass = 'text-danger bg-danger-soft py-2.5 px-3.5 rounded-sm my-4 text-center text-sm'
 const btnPrimaryClass =
-  'w-full py-[15px] rounded-full bg-accent text-[#17130b] text-[15px] font-bold cursor-pointer font-sans transition-[transform,filter,box-shadow,background-color,color] duration-200 ease-spring not-disabled:hover:scale-[1.02] not-disabled:hover:brightness-110 not-disabled:hover:shadow-[0_8px_24px_var(--color-accent-glow)] not-disabled:active:scale-[0.99] disabled:bg-surface-2 disabled:text-ink-dim disabled:cursor-not-allowed disabled:opacity-70'
+  'w-full py-[15px] rounded-full bg-accent text-white text-[15px] font-bold cursor-pointer font-sans transition-[transform,filter,box-shadow,background-color,color] duration-200 ease-spring not-disabled:hover:scale-[1.02] not-disabled:hover:brightness-110 not-disabled:hover:shadow-[0_8px_24px_var(--color-accent-glow)] not-disabled:active:scale-[0.99] disabled:bg-surface-2 disabled:text-ink-dim disabled:cursor-not-allowed disabled:opacity-70'
 
 function useCountUp(target, durationMs = 600) {
   const [value, setValue] = useState(target)
@@ -70,6 +71,7 @@ export default function Gameplay() {
   const [finished, setFinished] = useState(false)
   const [guessSubmitting, setGuessSubmitting] = useState(false)
   const [guessError, setGuessError] = useState('')
+  const [answerFocused, setAnswerFocused] = useState(false)
 
   useEffect(() => {
     if (!userId) {
@@ -284,7 +286,7 @@ export default function Gameplay() {
                 >
                   <span
                     className={`flex items-center justify-center w-[26px] h-[26px] shrink-0 rounded-full font-bold text-xs border border-border ${
-                      i === 0 ? 'bg-accent text-[#17130b] border-accent' : 'bg-surface text-ink-dim'
+                      i === 0 ? 'bg-accent text-white border-accent' : 'bg-surface text-ink-dim'
                     }`}
                   >
                     {i + 1}
@@ -397,6 +399,9 @@ export default function Gameplay() {
   return (
     <section className="flex justify-center py-12 px-5">
       <div className={gameCardClass} key={`question-${questionIndex}`}>
+        <div className="flex justify-center mb-2">
+          <Mascot userId={userId} focused={answerFocused} />
+        </div>
         <div className="mb-6.5">
           <span className={questionBadgeClass}>
             Question {questionIndex + 1} of {gameQuestions.length}
@@ -416,6 +421,8 @@ export default function Gameplay() {
           onKeyDown={(e) => {
             if (e.key === 'Enter') nextQuestion()
           }}
+          onFocus={() => setAnswerFocused(true)}
+          onBlur={() => setAnswerFocused(false)}
           placeholder="Type your answer..."
           className="w-full box-border py-3.5 px-4.5 bg-surface-2 border border-border rounded-md text-[15px] font-sans text-ink placeholder:text-ink-dim mb-5 outline-none transition-[border-color,box-shadow] duration-200 focus:border-accent-border focus:shadow-[0_0_0_4px_var(--color-accent-soft)]"
         />
