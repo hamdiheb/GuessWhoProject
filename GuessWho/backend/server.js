@@ -11,6 +11,7 @@ app.use(express.json());
 app.use("/api", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/games", gameRoutes);
-app.listen(3000, () => {
-  console.log("Server running on http://localhost:3000");
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });

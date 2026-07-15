@@ -79,3 +79,144 @@ export async function addQuestion(gameId, question) {
   if (updateError) return { error: updateError.message, status: 400 };
   return { data: { game_questions: newList }, status: 200 };
 }
+
+export async function submitAnswer(gameId, { user_id, question_index, answer }) {
+  if (!user_id || question_index === undefined || question_index === null || !answer) {
+    return { error: "User, question index, and answer are required", status: 400 };
+  }
+
+  const { data: currentGame, error } = await gameRepository.getGameByIdInDB(gameId);
+  if (error || !currentGame) return { error: "Game not found", status: 404 };
+
+  const question = currentGame.game_questions?.[question_index];
+  if (question === undefined) {
+    return { error: "Invalid question index", status: 400 };
+  }
+
+  const answersList = [...(currentGame.game_answers || [])];
+  while (answersList.length <= question_index) {
+    answersList.push(null);
+  }
+
+  const entry = answersList[question_index] || { question, answers: {} };
+  answersList[question_index] = {
+    question,
+    answers: { ...entry.answers, [user_id]: answer },
+  };
+
+  const { error: updateError } = await gameRepository.updateAnswersInDB(
+    gameId,
+    answersList,
+  );
+
+  if (updateError) return { error: updateError.message, status: 400 };
+  return { data: { game_answers: answersList }, status: 200 };
+}
+
+function isAllAnswered(game) {
+  const questions = game.game_questions || [];
+  const users = game.joined_users || [];
+  if (questions.length === 0 || users.length === 0) return false;
+  return questions.every((_, qIdx) =>
+    users.every((uid) => game.game_answers?.[qIdx]?.answers?.[uid] !== undefined),
+  );
+}
+
+export async function submitGuess(gameId, { user_id, question_index, author_id, guessed_user_id }) {
+  if (
+    !user_id ||
+    question_index === undefined || question_index === null ||
+    !author_id ||
+    !guessed_user_id
+  ) {
+    return { error: "User, question index, author, and guessed user are required", status: 400 };
+  }
+
+  const { data: currentGame, error } = await gameRepository.getGameByIdInDB(gameId);
+  if (error || !currentGame) return { error: "Game not found", status: 404 };
+
+  if (!currentGame.is_started) {
+    return { error: "Game has not started", status: 400 };
+  }
+
+  const question = currentGame.game_questions?.[question_index];
+  if (question === undefined) {
+    return { error: "Invalid question index", status: 400 };
+  }
+
+  const joinedUsers = currentGame.joined_users || [];
+  const isJoined = (id) => joinedUsers.some((u) => String(u) === String(id));
+  if (!isJoined(user_id) || !isJoined(author_id)) {
+    return { error: "User or author is not part of this game", status: 400 };
+  }
+
+  if (String(author_id) === String(user_id)) {
+    return { error: "You cannot guess your own answer", status: 400 };
+  }
+
+  const authorAnswer = currentGame.game_answers?.[question_index]?.answers?.[author_id];
+  if (authorAnswer === undefined) {
+    return { error: "This author has not answered this question yet", status: 400 };
+  }
+
+  if (!isAllAnswered(currentGame)) {
+    return { error: "Not all players have finished answering yet", status: 400 };
+  }
+
+  const guesses = currentGame.game_guesses ? [...currentGame.game_guesses] : [];
+  while (guesses.length <= question_index) guesses.push(null);
+
+  const slotForQuestion = guesses[question_index] || {};
+  const authorGuesses = slotForQuestion[author_id] || {};
+
+  if (authorGuesses[user_id] !== undefined) {
+    const storedGuess = authorGuesses[user_id];
+    return {
+      data: {
+        correct: String(storedGuess) === String(author_id),
+        author_id,
+        game_guesses: guesses,
+        game_scores: currentGame.game_scores || {},
+      },
+      status: 200,
+    };
+  }
+
+  const correct = String(guessed_user_id) === String(author_id);
+
+  guesses[question_index] = {
+    ...slotForQuestion,
+    [author_id]: { ...authorGuesses, [user_id]: guessed_user_id },
+  };
+
+  const scores = { ...(currentGame.game_scores || {}) };
+  if (correct) {
+    scores[user_id] = (scores[user_id] || 0) + 1;
+  }
+
+  const { error: updateError } = await gameRepository.updateGuessesInDB(gameId, {
+    game_guesses: guesses,
+    game_scores: scores,
+  });
+
+  if (updateError) return { error: updateError.message, status: 400 };
+
+  return {
+    data: { correct, author_id, game_guesses: guesses, game_scores: scores },
+    status: 200,
+  };
+}
+
+export async function launchGame(gameId, hostId) {
+  const { data: currentGame, error } = await gameRepository.getGameByIdInDB(gameId);
+  if (error || !currentGame) return { error: "Game not found", status: 404 };
+
+  if (String(currentGame.host_id) !== String(hostId)) {
+    return { error: "Only the host can launch this game", status: 403 };
+  }
+
+  const { error: updateError } = await gameRepository.launchGameInDB(gameId);
+  if (updateError) return { error: updateError.message, status: 400 };
+
+  return { data: { is_started: true }, status: 200 };
+}

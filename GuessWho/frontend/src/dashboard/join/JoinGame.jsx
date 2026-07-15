@@ -42,7 +42,7 @@ function JoinGame() {
         return;
       }
 
-      navigate("/gamePlay", { state: { gameId: data.id } });
+      navigate(`/gamePlay/${data.id}`);
     } catch {
       setMessage("Cannot connect to the server.");
     }

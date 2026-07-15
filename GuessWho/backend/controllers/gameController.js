@@ -26,3 +26,30 @@ export const addQuestion = async (req, res) => {
   if (error) return res.status(status).json({ error });
   return res.status(status).json(data);
 };
+
+export const submitAnswer = async (req, res) => {
+  const { data, error, status } = await gameService.submitAnswer(
+    req.params.id,
+    req.body,
+  );
+  if (error) return res.status(status).json({ error });
+  return res.status(status).json(data);
+};
+
+export const submitGuess = async (req, res) => {
+  const { data, error, status } = await gameService.submitGuess(
+    req.params.id,
+    req.body,
+  );
+  if (error) return res.status(status).json({ error });
+  return res.status(status).json(data);
+};
+
+export const launchGame = async (req, res) => {
+  const { data, error, status } = await gameService.launchGame(
+    req.params.id,
+    req.body.host_id,
+  );
+  if (error) return res.status(status).json({ error });
+  return res.status(status).json(data);
+};
