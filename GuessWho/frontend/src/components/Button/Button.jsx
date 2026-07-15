@@ -3,7 +3,7 @@ const base =
 
 const variants = {
   primary:
-    "bg-accent text-[#17130b] not-disabled:hover:scale-[1.02] not-disabled:hover:brightness-110 not-disabled:hover:shadow-[0_8px_24px_var(--color-accent-glow)] not-disabled:active:scale-[0.99]",
+    "bg-accent text-white not-disabled:hover:scale-[1.02] not-disabled:hover:brightness-110 not-disabled:hover:shadow-[0_8px_24px_var(--color-accent-glow)] not-disabled:active:scale-[0.99]",
   secondary:
     "bg-transparent text-accent border border-accent-border not-disabled:hover:bg-accent-soft not-disabled:hover:scale-[1.02] not-disabled:active:scale-[0.99]",
 };

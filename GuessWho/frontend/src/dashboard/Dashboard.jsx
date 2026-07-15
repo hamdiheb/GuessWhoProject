@@ -93,7 +93,7 @@ function Dashboard() {
         <div className="flex flex-col gap-3">
           <button
             onClick={handleHost}
-            className="py-[15px] rounded-full bg-accent text-[#17130b] text-[15px] font-bold cursor-pointer transition-[transform,filter,box-shadow] duration-200 ease-spring hover:scale-[1.02] hover:brightness-110 hover:shadow-[0_8px_24px_var(--color-accent-glow)] active:scale-[0.99]"
+            className="py-[15px] rounded-full bg-accent text-white text-[15px] font-bold cursor-pointer transition-[transform,filter,box-shadow] duration-200 ease-spring hover:scale-[1.02] hover:brightness-110 hover:shadow-[0_8px_24px_var(--color-accent-glow)] active:scale-[0.99]"
           >
             Host a Game
           </button>

@@ -9,7 +9,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 const inputRowClass =
   "group flex items-center gap-3 py-3.5 px-4 bg-surface-2 border border-border rounded-md transition-[border-color,box-shadow] duration-200 focus-within:border-accent-border focus-within:shadow-[0_0_0_4px_var(--color-accent-soft)]";
 const iconClass =
-  "w-[18px] h-[18px] rounded-full opacity-75 grayscale contrast-[.9] brightness-150 transition-[opacity,filter] duration-200 group-focus-within:opacity-100 group-focus-within:grayscale-0 group-focus-within:sepia group-focus-within:saturate-[3] group-focus-within:hue-rotate-[-10deg] group-focus-within:brightness-110";
+  "w-[18px] h-[18px] rounded-full opacity-70 grayscale contrast-125 transition-[opacity,filter] duration-200 group-focus-within:opacity-100 group-focus-within:grayscale-0 group-focus-within:sepia group-focus-within:saturate-[4] group-focus-within:hue-rotate-[-45deg]";
 const textInputClass =
   "w-full flex-1 border-none outline-none bg-transparent text-[15px] text-ink placeholder:text-ink-dim";
 
@@ -133,7 +133,7 @@ function SignUp() {
         <button
           type="submit"
           disabled={isFormIncomplete}
-          className="w-full block mt-7 p-3.5 rounded-full bg-accent text-[#17130b] text-base font-bold cursor-pointer transition-[transform,filter,box-shadow,background-color,color] duration-200 ease-spring not-disabled:hover:scale-[1.02] not-disabled:hover:brightness-110 not-disabled:hover:shadow-[0_8px_24px_var(--color-accent-glow)] not-disabled:active:scale-[0.99] disabled:bg-surface-2 disabled:text-ink-dim disabled:opacity-70 disabled:cursor-not-allowed disabled:shadow-none"
+          className="w-full block mt-7 p-3.5 rounded-full bg-accent text-white text-base font-bold cursor-pointer transition-[transform,filter,box-shadow,background-color,color] duration-200 ease-spring not-disabled:hover:scale-[1.02] not-disabled:hover:brightness-110 not-disabled:hover:shadow-[0_8px_24px_var(--color-accent-glow)] not-disabled:active:scale-[0.99] disabled:bg-surface-2 disabled:text-ink-dim disabled:opacity-70 disabled:cursor-not-allowed disabled:shadow-none"
         >
           Sign Up
         </button>
