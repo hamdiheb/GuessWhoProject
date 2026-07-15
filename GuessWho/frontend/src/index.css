@@ -151,6 +151,13 @@ body {
   box-sizing: border-box;
 }
 
+button,
+input,
+a,
+[role='button'] {
+  touch-action: manipulation;
+}
+
 h1,
 h2,
 h3 {

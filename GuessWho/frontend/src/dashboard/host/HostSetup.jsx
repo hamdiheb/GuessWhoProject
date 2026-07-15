@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 
+const API_URL = import.meta.env.VITE_API_URL;
 const PLAYERS_REFRESH_INTERVAL_MS = 30000;
 
 function HostSetup() {
@@ -23,7 +24,7 @@ function HostSetup() {
     async function loadData() {
       try {
         const response = await fetch(
-          `http://localhost:3000/api/games/${gameId}`,
+          `${API_URL}/api/games/${gameId}`,
         );
         const data = await response.json();
 
@@ -54,7 +55,7 @@ function HostSetup() {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/api/games/${gameId}/add-question`,
+        `${API_URL}/api/games/${gameId}/add-question`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -77,7 +78,7 @@ function HostSetup() {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/api/games/${gameId}/launch`,
+        `${API_URL}/api/games/${gameId}/launch`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
