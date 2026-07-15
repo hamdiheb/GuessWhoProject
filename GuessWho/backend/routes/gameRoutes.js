@@ -4,6 +4,8 @@ import {
   joinGame,
   getGame,
   addQuestion,
+  submitAnswer,
+  launchGame,
 } from "../controllers/gameController.js";
 
 
@@ -12,5 +14,7 @@ router.post("/create", createGame);
 router.post("/join", joinGame);
 router.get("/:id", getGame);
 router.post("/:id/add-question", addQuestion);
+router.post("/:id/answer", submitAnswer);
+router.post("/:id/launch", launchGame);
 
 export default router;

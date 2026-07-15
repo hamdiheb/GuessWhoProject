@@ -7,7 +7,9 @@ export async function createGameInDB(gameData) {
 export async function getGameByIdInDB(gameId) {
   return await supabase
     .from("game")
-    .select("game_name, game_questions, joined_users")
+    .select(
+      "id, game_name, game_code, host_id, game_questions, game_answers, joined_users, is_started",
+    )
     .eq("id", gameId)
     .single();
 }
@@ -39,6 +41,20 @@ export async function updateQuestionsInDB(gameId, newList) {
 export async function getUsersByIds(userIds) {
   return await supabase
     .from("users")
-    .select("username")
+    .select("id, username")
     .in("id", userIds);
+}
+
+export async function updateAnswersInDB(gameId, answers) {
+  return await supabase
+    .from("game")
+    .update({ game_answers: answers })
+    .eq("id", gameId);
+}
+
+export async function launchGameInDB(gameId) {
+  return await supabase
+    .from("game")
+    .update({ is_started: true })
+    .eq("id", gameId);
 }

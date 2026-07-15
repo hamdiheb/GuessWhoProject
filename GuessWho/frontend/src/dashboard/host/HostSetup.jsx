@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import styles from "./HostSetup.module.css";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 
+const PLAYERS_REFRESH_INTERVAL_MS = 30000;
+
 function HostSetup() {
   const { gameCode } = useParams();
   const location = useLocation();
@@ -17,14 +19,16 @@ function HostSetup() {
   useEffect(() => {
     if (!gameId) return;
 
-    const loadData = async () => {
+    let cancelled = false;
+
+    async function loadData() {
       try {
         const response = await fetch(
           `http://localhost:3000/api/games/${gameId}`,
         );
         const data = await response.json();
 
-        if (data) {
+        if (data && !cancelled) {
           setGameName(data.game_name);
           setQuestionsList(data.game_questions || []);
 
@@ -35,9 +39,15 @@ function HostSetup() {
       } catch (err) {
         console.error("Error loading data:", err);
       }
-    };
+    }
 
     loadData();
+    const intervalId = setInterval(loadData, PLAYERS_REFRESH_INTERVAL_MS);
+
+    return () => {
+      cancelled = true;
+      clearInterval(intervalId);
+    };
   }, [gameId]);
 
   const addQuestion = async () => {
@@ -63,6 +73,32 @@ function HostSetup() {
     }
   };
 
+  const launchGame = async () => {
+    const hostId = localStorage.getItem("currentUserId");
+
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/games/${gameId}/launch`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ host_id: hostId }),
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.error || "Failed to launch game");
+        return;
+      }
+
+      navigate(`/gamePlay/${gameId}`);
+    } catch (err) {
+      console.error("Error launching game:", err);
+    }
+  };
+
   return (
     <div className={styles.mainContainer}>
       <header className={styles.header}>
@@ -79,6 +115,9 @@ function HostSetup() {
             <input
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") addQuestion();
+              }}
               placeholder="Add question..."
             />
             <button onClick={addQuestion}>Add</button>
@@ -103,7 +142,7 @@ function HostSetup() {
       <button
         className={styles.launchBtn}
         disabled={questionsList.length === 0 || players.length === 1}
-        onClick={() => navigate("/Gameplay")}
+        onClick={launchGame}
       >
         Launch Game
       </button>

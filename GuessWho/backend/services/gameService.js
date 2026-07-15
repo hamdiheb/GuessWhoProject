@@ -79,3 +79,50 @@ export async function addQuestion(gameId, question) {
   if (updateError) return { error: updateError.message, status: 400 };
   return { data: { game_questions: newList }, status: 200 };
 }
+
+export async function submitAnswer(gameId, { user_id, question_index, answer }) {
+  if (!user_id || question_index === undefined || question_index === null || !answer) {
+    return { error: "User, question index, and answer are required", status: 400 };
+  }
+
+  const { data: currentGame, error } = await gameRepository.getGameByIdInDB(gameId);
+  if (error || !currentGame) return { error: "Game not found", status: 404 };
+
+  const question = currentGame.game_questions?.[question_index];
+  if (question === undefined) {
+    return { error: "Invalid question index", status: 400 };
+  }
+
+  const answersList = [...(currentGame.game_answers || [])];
+  while (answersList.length <= question_index) {
+    answersList.push(null);
+  }
+
+  const entry = answersList[question_index] || { question, answers: {} };
+  answersList[question_index] = {
+    question,
+    answers: { ...entry.answers, [user_id]: answer },
+  };
+
+  const { error: updateError } = await gameRepository.updateAnswersInDB(
+    gameId,
+    answersList,
+  );
+
+  if (updateError) return { error: updateError.message, status: 400 };
+  return { data: { game_answers: answersList }, status: 200 };
+}
+
+export async function launchGame(gameId, hostId) {
+  const { data: currentGame, error } = await gameRepository.getGameByIdInDB(gameId);
+  if (error || !currentGame) return { error: "Game not found", status: 404 };
+
+  if (String(currentGame.host_id) !== String(hostId)) {
+    return { error: "Only the host can launch this game", status: 403 };
+  }
+
+  const { error: updateError } = await gameRepository.launchGameInDB(gameId);
+  if (updateError) return { error: updateError.message, status: 400 };
+
+  return { data: { is_started: true }, status: 200 };
+}
