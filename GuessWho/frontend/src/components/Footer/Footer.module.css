@@ -1,0 +1,37 @@
+.footer {
+  margin-top: auto;
+  background: #1d1330;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.brand {
+  font-weight: 700;
+  color: #fff;
+}
+
+.tagline {
+  opacity: 0.85;
+}
+
+.copyright {
+  opacity: 0.7;
+}
+
+@media (max-width: 560px) {
+  .inner {
+    flex-direction: column;
+    text-align: center;
+  }
+}
