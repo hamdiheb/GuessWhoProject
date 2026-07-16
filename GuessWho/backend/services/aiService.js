@@ -1,12 +1,24 @@
 import OpenAI from "openai";
 
-const client = new OpenAI({
-  baseURL: "https://openrouter.ai/api/v1",
-  apiKey: process.env.OPENROUTER_API_KEY,
-});
+let client;
+
+function getClient() {
+  if (!process.env.OPENROUTER_API_KEY) {
+    throw new Error("AI question generation is not configured on this server");
+  }
+
+  if (!client) {
+    client = new OpenAI({
+      baseURL: "https://openrouter.ai/api/v1",
+      apiKey: process.env.OPENROUTER_API_KEY,
+    });
+  }
+
+  return client;
+}
 
 export async function generateQuestionsFromPrompt(prompt) {
-  const completion = await client.chat.completions.create({
+  const completion = await getClient().chat.completions.create({
     model: "tencent/hy3:free",
     messages: [
       {
