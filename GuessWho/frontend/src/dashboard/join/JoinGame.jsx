@@ -1,18 +1,18 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Button from "../../components/Button/Button";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 function JoinGame() {
-  const [roomCode, setRoomCode] = useState("");
+  const [searchParams] = useSearchParams();
+  const qrRoomCode = searchParams.get("code")?.trim() || "";
+  const [roomCode, setRoomCode] = useState(qrRoomCode);
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
-  const handleJoin = async (e) => {
-    e.preventDefault();
-
-    if (!roomCode) {
+  const joinGame = useCallback(async (code) => {
+    if (!code) {
       setMessage("Please enter a room code.");
       return;
     }
@@ -20,7 +20,9 @@ function JoinGame() {
     const userId = localStorage.getItem("currentUserId");
 
     if (!userId) {
-      setMessage("Please sign in first.");
+      navigate("/signin", {
+        state: { returnTo: `/join-game?code=${encodeURIComponent(code)}` },
+      });
       return;
     }
 
@@ -29,7 +31,7 @@ function JoinGame() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          game_code: roomCode,
+          game_code: code,
           user_id: userId,
         }),
       });
@@ -45,6 +47,18 @@ function JoinGame() {
     } catch {
       setMessage("Cannot connect to the server.");
     }
+  }, [navigate]);
+
+  useEffect(() => {
+    if (!qrRoomCode) return;
+
+    const joinTimeout = window.setTimeout(() => joinGame(qrRoomCode), 0);
+    return () => window.clearTimeout(joinTimeout);
+  }, [joinGame, qrRoomCode]);
+
+  const handleJoin = (e) => {
+    e.preventDefault();
+    joinGame(roomCode);
   };
 
   return (
