@@ -27,6 +27,15 @@ export const addQuestion = async (req, res) => {
   return res.status(status).json(data);
 };
 
+export const generateQuestions = async (req, res) => {
+  const { data, error, status } = await gameService.generateQuestions(
+    req.params.id,
+    req.body.prompt,
+  );
+  if (error) return res.status(status).json({ error });
+  return res.status(status).json(data);
+};
+
 export const submitAnswer = async (req, res) => {
   const { data, error, status } = await gameService.submitAnswer(
     req.params.id,

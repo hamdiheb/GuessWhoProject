@@ -1,4 +1,5 @@
 import * as gameRepository from "../repository/gameRepository.js";
+import { generateQuestionsFromPrompt } from "./aiService.js";
 
 export async function createGame(gameData) {
   const { game_name, game_code, host_id, joined_users } = gameData;
@@ -77,6 +78,32 @@ export async function addQuestion(gameId, question) {
   );
 
   if (updateError) return { error: updateError.message, status: 400 };
+  return { data: { game_questions: newList }, status: 200 };
+}
+
+export async function generateQuestions(gameId, prompt) {
+  if (!prompt || !prompt.trim()) {
+    return { error: "Prompt is required", status: 400 };
+  }
+
+  const { data: currentGame, error } = await gameRepository.getGameByIdInDB(gameId);
+  if (error || !currentGame) return { error: "Game not found", status: 404 };
+
+  let generated;
+  try {
+    generated = await generateQuestionsFromPrompt(prompt);
+  } catch (err) {
+    return { error: err.message || "Failed to generate questions", status: 502 };
+  }
+
+  if (generated.length === 0) {
+    return { error: "AI did not return any questions", status: 502 };
+  }
+
+  const newList = [...(currentGame.game_questions || []), ...generated];
+  const { error: updateError } = await gameRepository.updateQuestionsInDB(gameId, newList);
+  if (updateError) return { error: updateError.message, status: 400 };
+
   return { data: { game_questions: newList }, status: 200 };
 }
 
