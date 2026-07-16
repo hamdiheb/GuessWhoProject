@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -15,6 +15,8 @@ function SignIn() {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+  const returnTo = location.state?.returnTo || "/dashboard";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -51,7 +53,7 @@ function SignIn() {
       setSuccessMessage("Welcome back!");
 
       setTimeout(() => {
-        navigate("/dashboard");
+        navigate(returnTo);
       }, 1000);
     } catch (err) {
       console.error(err);

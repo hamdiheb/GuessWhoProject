@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
+import { QRCodeSVG } from 'qrcode.react'
 
 const API_URL = import.meta.env.VITE_API_URL
 const PLAYERS_REFRESH_INTERVAL_MS = 30000
@@ -10,6 +11,7 @@ function HostSetup() {
   const navigate = useNavigate()
 
   const gameId = location.state?.gameId
+  const joinLink = `${window.location.origin}/join-game?code=${gameCode}`
 
   const [gameName, setGameName] = useState('Loading...')
   const [question, setQuestion] = useState('')
@@ -131,6 +133,10 @@ function HostSetup() {
             {gameCode}
           </strong>
         </p>
+        <div className="mt-5 flex flex-col items-center gap-2">
+          <QRCodeSVG value={joinLink} size={180} />
+          <p className="text-sm text-ink-dim">Scan to join this game</p>
+        </div>
       </header>
 
       <div className="flex gap-5 flex-wrap">
