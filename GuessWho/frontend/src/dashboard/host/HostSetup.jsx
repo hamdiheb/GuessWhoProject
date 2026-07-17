@@ -1,107 +1,128 @@
-import { useState, useEffect } from "react";
-import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { useState, useEffect } from 'react'
+import { useParams, useLocation, useNavigate } from 'react-router-dom'
+import { QRCodeSVG } from 'qrcode.react'
 
-const API_URL = import.meta.env.VITE_API_URL;
-const PLAYERS_REFRESH_INTERVAL_MS = 30000;
+const API_URL = import.meta.env.VITE_API_URL
+const PLAYERS_REFRESH_INTERVAL_MS = 30000
 
 function HostSetup() {
-  const { gameCode } = useParams();
-  const location = useLocation();
-  const navigate = useNavigate();
+  const { gameCode } = useParams()
+  const location = useLocation()
+  const navigate = useNavigate()
 
-  const gameId = location.state?.gameId;
+  const gameId = location.state?.gameId
+  const joinLink = `${window.location.origin}/join-game?code=${gameCode}`
 
-  const [gameName, setGameName] = useState("Loading...");
-  const [question, setQuestion] = useState("");
-  const [questionsList, setQuestionsList] = useState([]);
-  const [players, setPlayers] = useState([]);
+  const [gameName, setGameName] = useState('Loading...')
+  const [question, setQuestion] = useState('')
+  const [questionsList, setQuestionsList] = useState([])
+  const [players, setPlayers] = useState([])
+  const [aiPrompt, setAiPrompt] = useState('')
+  const [aiLoading, setAiLoading] = useState(false)
 
   useEffect(() => {
-    if (!gameId) return;
+    if (!gameId) return
 
-    let cancelled = false;
+    let cancelled = false
 
     async function loadData() {
       try {
-        const response = await fetch(
-          `${API_URL}/api/games/${gameId}`,
-        );
-        const data = await response.json();
+        const response = await fetch(`${API_URL}/api/games/${gameId}`)
+        const data = await response.json()
 
         if (data && !cancelled) {
-          setGameName(data.game_name);
-          setQuestionsList(data.game_questions || []);
+          setGameName(data.game_name)
+          setQuestionsList(data.game_questions || [])
 
           if (data.players) {
-            setPlayers(data.players);
+            setPlayers(data.players)
           }
         }
       } catch (err) {
-        console.error("Error loading data:", err);
+        console.error('Error loading data:', err)
       }
     }
 
-    loadData();
-    const intervalId = setInterval(loadData, PLAYERS_REFRESH_INTERVAL_MS);
+    loadData()
+    const intervalId = setInterval(loadData, PLAYERS_REFRESH_INTERVAL_MS)
 
     return () => {
-      cancelled = true;
-      clearInterval(intervalId);
-    };
-  }, [gameId]);
+      cancelled = true
+      clearInterval(intervalId)
+    }
+  }, [gameId])
 
   const addQuestion = async () => {
-    if (question === "") return;
+    if (question === '') return
 
     try {
-      const response = await fetch(
-        `${API_URL}/api/games/${gameId}/add-question`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question }),
-        },
-      );
+      const response = await fetch(`${API_URL}/api/games/${gameId}/add-question`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question }),
+      })
 
       if (response.ok) {
-        const updatedGame = await response.json();
-        setQuestionsList(updatedGame.game_questions);
-        setQuestion("");
+        const updatedGame = await response.json()
+        setQuestionsList(updatedGame.game_questions)
+        setQuestion('')
       }
     } catch (err) {
-      console.error("Error adding question:", err);
+      console.error('Error adding question:', err)
     }
-  };
+  }
 
   const launchGame = async () => {
-    const hostId = localStorage.getItem("currentUserId");
+    const hostId = localStorage.getItem('currentUserId')
 
     try {
-      const response = await fetch(
-        `${API_URL}/api/games/${gameId}/launch`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ host_id: hostId }),
-        },
-      );
+      const response = await fetch(`${API_URL}/api/games/${gameId}/launch`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ host_id: hostId }),
+      })
 
-      const data = await response.json();
+      const data = await response.json()
 
       if (!response.ok) {
-        alert(data.error || "Failed to launch game");
-        return;
+        alert(data.error || 'Failed to launch game')
+        return
       }
 
-      navigate(`/gamePlay/${gameId}`);
+      navigate(`/gamePlay/${gameId}`)
     } catch (err) {
-      console.error("Error launching game:", err);
+      console.error('Error launching game:', err)
     }
-  };
+  }
 
   const listItemClass =
-    "py-3 px-4 bg-surface-2 border border-border-soft rounded-sm text-ink text-sm animate-item-in break-words";
+    'py-3 px-4 bg-surface-2 border border-border-soft rounded-sm text-ink text-sm animate-item-in break-words'
 
+  async function questionGenerator() {
+    if (!aiPrompt.trim() || aiLoading) return
+
+    setAiLoading(true)
+    try {
+      const response = await fetch(`${API_URL}/api/games/${gameId}/generate-questions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: aiPrompt }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setQuestionsList(data.game_questions)
+        setAiPrompt('')
+      } else {
+        alert(data.error || 'Failed to generate questions')
+      }
+    } catch (err) {
+      console.error('Error generating questions:', err)
+    } finally {
+      setAiLoading(false)
+    }
+  }
   return (
     <div className="max-w-[900px] mx-auto my-12 px-5 animate-fade-slide-in">
       <header className="text-center mb-8 py-8 px-6 bg-surface border border-border rounded-lg">
@@ -112,17 +133,41 @@ function HostSetup() {
             {gameCode}
           </strong>
         </p>
+        <div className="mt-5 flex flex-col items-center gap-2">
+          <QRCodeSVG value={joinLink} size={180} />
+          <p className="text-sm text-ink-dim">Scan to join this game</p>
+        </div>
       </header>
 
       <div className="flex gap-5 flex-wrap">
         <section className="flex-1 min-w-[280px] p-6 border border-border rounded-lg bg-surface">
+          <div>
+            <input
+              type="text"
+              value={aiPrompt}
+              onChange={(e) => setAiPrompt(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') questionGenerator()
+              }}
+              placeholder="Describe the questions you want..."
+              className="flex-1 min-w-0 py-3 px-3.5 bg-surface-2 border border-border rounded-md text-sm text-ink placeholder:text-ink-dim outline-none transition-[border-color,box-shadow] duration-200 focus:border-accent-border focus:shadow-[0_0_0_4px_var(--color-accent-soft)]"
+            />
+            <button
+              onClick={questionGenerator}
+              disabled={aiLoading}
+              className="ml-2 py-2.5 px-5 bg-accent text-white border-none rounded-full text-sm font-bold cursor-pointer transition-[transform,filter] duration-200 ease-spring hover:scale-[1.04] hover:brightness-110 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {aiLoading ? 'Generating...' : 'Generate'}
+            </button>
+          </div>
+
           <h3 className="mb-4 text-ink">Questions</h3>
           <div className="flex gap-2.5 mb-4">
             <input
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter") addQuestion();
+                if (e.key === 'Enter') addQuestion()
               }}
               placeholder="Add question..."
               className="flex-1 min-w-0 py-3 px-3.5 bg-surface-2 border border-border rounded-md text-sm text-ink placeholder:text-ink-dim outline-none transition-[border-color,box-shadow] duration-200 focus:border-accent-border focus:shadow-[0_0_0_4px_var(--color-accent-soft)]"
@@ -163,7 +208,7 @@ function HostSetup() {
         Launch Game
       </button>
     </div>
-  );
+  )
 }
 
-export default HostSetup;
+export default HostSetup

@@ -4,6 +4,7 @@ import {
   joinGame,
   getGame,
   addQuestion,
+  generateQuestions,
   submitAnswer,
   submitGuess,
   launchGame,
@@ -16,6 +17,7 @@ router.post("/create", createGame);
 router.post("/join", joinGame);
 router.get("/:id", getGame);
 router.post("/:id/add-question", addQuestion);
+router.post("/:id/generate-questions", generateQuestions);
 router.post("/:id/answer", submitAnswer);
 router.post("/:id/guess", submitGuess);
 router.post("/:id/launch", launchGame);

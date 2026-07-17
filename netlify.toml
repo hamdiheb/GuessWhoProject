@@ -2,3 +2,7 @@
   base = "GuessWho/frontend"
   publish = "dist"
   command = "npm run build"
+  [[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
