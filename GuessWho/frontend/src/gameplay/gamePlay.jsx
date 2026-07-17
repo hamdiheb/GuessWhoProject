@@ -131,44 +131,119 @@ export default function Gameplay() {
   const players = game?.players || [];
   const isStarted = !!game?.is_started;
 
-  useEffect(() => {
-    if (!finished) return;
+  function hasRelationshipScores() {
+  return relationshipScores.length > 0;
+}
 
-    const slot = findCurrentSlot();
+function isGuessingFinished() {
+  return findCurrentSlot() === null;
+}
 
-    if (slot === null && relationshipScores.length === 0) {
-      loadRelationshipScores();
+function shouldLoadRelationshipScores() {
+  if (!finished) {
+    return false;
+  }
+
+  if (hasRelationshipScores()) {
+    return false;
+  }
+
+  if (!isGuessingFinished()) {
+    return false;
+  }
+
+  return true;
+}
+
+  function playerName(id) {
+     for (let i = 0; i < players.length; i++) {
+    const player = players[i];
+
+    if (String(player.id) === String(id)) {
+      return player.username;
     }
-  }, [finished, gameGuesses, relationshipScores.length]);
+  }
+    return "Unknown player";
+  }
 
-  const playerName = (id) =>
-    players.find((p) => String(p.id) === String(id))?.username ||
-    "Unknown player";
+  function areAllQuestionsAnswered() {
+    if (gameQuestions.length === 0) {
+      return false;
+    }
 
-  const allAnswered =
-    gameQuestions.length > 0 &&
-    joinedUsers.length > 0 &&
-    gameQuestions.every((_, qIdx) =>
-      joinedUsers.every(
-        (uid) => gameAnswers[qIdx]?.answers?.[uid] !== undefined,
-      ),
-    );
+    if (joinedUsers.length === 0) {
+      return false;
+    }
 
-  function findCurrentSlot() {
-    for (let qIdx = 0; qIdx < gameQuestions.length; qIdx++) {
-      for (const authorId of joinedUsers) {
-        const eligibleGuessers = joinedUsers.filter(
-          (uid) => String(uid) !== String(authorId),
-        );
-        const guessesForSlot = gameGuesses[qIdx]?.[authorId] || {};
-        const complete = eligibleGuessers.every(
-          (uid) => guessesForSlot[uid] !== undefined,
-        );
-        if (!complete) return { questionIndex: qIdx, authorId };
+    for (let questionIndex = 0; questionIndex < gameQuestions.length; questionIndex++) {
+    const question = gameAnswers[questionIndex];
+
+    if (!question) {
+      return false;
+    }
+
+    if (!question.answers) {
+        return false;
+      }
+
+    for (let userIndex = 0; userIndex < joinedUsers.length; userIndex++) {
+      const currentUserId = joinedUsers[userIndex];
+
+      
+
+      if (question.answers[currentUserId] === undefined) {
+        return false;
       }
     }
-    return null;
   }
+
+  return true;
+}
+
+  const allAnswered = areAllQuestionsAnswered();
+
+ function findCurrentSlot() {
+  for (let questionIndex = 0; questionIndex < gameQuestions.length; questionIndex++) {
+
+    for (let authorIndex = 0; authorIndex < joinedUsers.length; authorIndex++) {
+
+      const authorId = joinedUsers[authorIndex];
+
+      const eligibleGuessers = [];
+
+      for (let userIndex = 0; userIndex < joinedUsers.length; userIndex++) {
+        const currentUserId = joinedUsers[userIndex];
+
+        if (String(currentUserId) !== String(authorId)) {
+          eligibleGuessers.push(currentUserId);
+        }
+      }
+
+      const guessesForSlot =
+        gameGuesses[questionIndex]?.[authorId] || {};
+
+      let complete = true;
+
+      for (let guesserIndex = 0; guesserIndex < eligibleGuessers.length; guesserIndex++) {
+        const currentUserId = eligibleGuessers[guesserIndex];
+
+        if (guessesForSlot[currentUserId] === undefined) {
+          complete = false;
+          break;
+        }
+      }
+
+      if (!complete) {
+        return {
+          questionIndex,
+          authorId,
+        };
+      }
+    }
+  }
+
+  return null;
+}
 
   async function nextQuestion() {
     if (!answer.trim()) {
@@ -227,15 +302,15 @@ export default function Gameplay() {
           guessed_user_id: guessedUserId,
         }),
       });
-      const data = await response.json();
+      const result = await response.json();
       if (!response.ok) {
-        setGuessError(data.error || "Failed to submit guess");
+        setGuessError(result.error || "Failed to submit guess");
         return;
       }
       setGame((prev) => ({
         ...prev,
-        game_guesses: data.game_guesses,
-        game_scores: data.game_scores,
+        game_guesses: result.game_guesses,
+        game_scores: result.game_scores,
       }));
     } catch (err) {
       console.error(err);
@@ -245,26 +320,40 @@ export default function Gameplay() {
     }
   }
 
-  async function loadRelationshipScores() {
-    try {
-      const response = await fetch(
-        `${API_URL}/api/games/${gameId}/relationship-scores`,
-      );
+  async function fetchRelationshipScores() {
+  const response = await fetch(
+    `${API_URL}/api/games/${gameId}/relationship-scores`,
+  );
 
-      const data = await response.json();
+  const result = await response.json();
 
-      if (!response.ok) {
-        console.error(data.error);
-        return;
-      }
-     console.log("Relationship scores:", data);
-      setRelationshipScores(data);
-    } catch (error) {
-      console.error(error);
-    }
+  if (!response.ok) {
+    throw new Error(result.error || "Failed to load relationship scores");
   }
 
+  return result;
+}
+
+
   const myScore = useCountUp(gameScores[userId] || 0);
+
+  async function loadRelationshipScores() {
+  try {
+    const relationshipScores = await fetchRelationshipScores();
+
+    setRelationshipScores(relationshipScores);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+  useEffect(function () {
+  if (!shouldLoadRelationshipScores()) {
+    return;
+  }
+
+  loadRelationshipScores();
+}, [finished, gameGuesses, relationshipScores.length]);
 
   if (loading)
     return <p className="text-center text-ink-muted py-16">Loading...</p>;
@@ -303,17 +392,28 @@ export default function Gameplay() {
     const slot = findCurrentSlot();
 
     if (slot === null) {
-      const ranked = [...joinedUsers]
-        .map((uid) => ({ uid, score: gameScores[uid] || 0 }))
-        .sort((a, b) => b.score - a.score);
+      const rankedPlayers = [];
+      for (let i = 0; i < joinedUsers.length; i++) {
+        const userId = joinedUsers[i];
 
-      const myRelationships = relationshipScores.filter(
-        (item) =>String(item.guesserId) === String(userId),
-      );
-      console.log("Current user:", userId);
-      console.log("My relationships:", myRelationships);
-      console.log("Players:", players);
+        rankedPlayers.push({
+          uid: userId,
+          score: gameScores[userId] || 0,
+        });
+      }
 
+      rankedPlayers.sort(function (firstPlayer, secondPlayer) {
+        return secondPlayer.score - firstPlayer.score;
+      });
+
+      const myRelationships = [];
+      for (let i = 0; i < relationshipScores.length; i++) {
+        const score = relationshipScores[i];
+
+        if (String(score.guesserId) === String(userId)) {
+          myRelationships.push(score);
+        }
+      }
       return (
         <section className="flex justify-center py-12 px-5">
           <div className={`${gameCardClass} relative overflow-hidden`}>
@@ -339,7 +439,7 @@ export default function Gameplay() {
             </div>
             <p className="text-2xl font-bold text-ink mb-6">Final results!</p>
             <ol className="list-none p-0 m-0 mb-7 flex flex-col gap-2.5">
-              {ranked.map(({ uid, score }, i) => (
+              {rankedPlayers.map(({ uid, score }, i) => (
                 <li
                   key={uid}
                   className="flex items-center gap-3 py-3 px-4 bg-surface-2 border border-border-soft rounded-md text-left animate-fade-slide-in"
@@ -371,7 +471,6 @@ export default function Gameplay() {
             </ol>
             <h3 className="text-lg font-bold mt-8 mb-4">Relationship Scores</h3>
 
-           
             <ul className="space-y-2">
               {myRelationships.map((item) => (
                 <li key={item.authorId}>
@@ -460,9 +559,15 @@ export default function Gameplay() {
       );
     }
 
-    const candidates = joinedUsers.filter(
-      (uid) => String(uid) !== String(userId),
-    );
+    const candidates = [];
+
+    for (let i = 0; i < joinedUsers.length; i++) {
+      const candidateId = joinedUsers[i];
+
+      if (String(candidateId) !== String(userId)) {
+        candidates.push(candidateId);
+      }
+    }
     const revealedAnswer =
       gameAnswers[slot.questionIndex]?.answers?.[slot.authorId];
 

@@ -64,12 +64,12 @@ export const launchGame = async (req, res) => {
 };
 
 export const getRelationshipScores = async (req, res) => {
-  const { data, error, status } =
-  await gameService.getRelationshipScores(req.params.id);
+  const results = await gameService.getRelationshipScores(req.params.id);
 
-  if(error) {
-    return res.status(status).json({error});
+  if(!results) {
+    return res.status(404).json({
+    });
   }
   
-  return res.status(status).json(data)
+  return res.status(200).json(results)
 };

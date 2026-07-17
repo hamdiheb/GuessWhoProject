@@ -90,14 +90,18 @@ export async function generateQuestions(gameId, prompt) {
     return { error: "Prompt is required", status: 400 };
   }
 
-  const { data: currentGame, error } = await gameRepository.getGameByIdInDB(gameId);
+  const { data: currentGame, error } =
+    await gameRepository.getGameByIdInDB(gameId);
   if (error || !currentGame) return { error: "Game not found", status: 404 };
 
   let generated;
   try {
     generated = await generateQuestionsFromPrompt(prompt);
   } catch (err) {
-    return { error: err.message || "Failed to generate questions", status: 502 };
+    return {
+      error: err.message || "Failed to generate questions",
+      status: 502,
+    };
   }
 
   if (generated.length === 0) {
@@ -105,15 +109,28 @@ export async function generateQuestions(gameId, prompt) {
   }
 
   const newList = [...(currentGame.game_questions || []), ...generated];
-  const { error: updateError } = await gameRepository.updateQuestionsInDB(gameId, newList);
+  const { error: updateError } = await gameRepository.updateQuestionsInDB(
+    gameId,
+    newList,
+  );
   if (updateError) return { error: updateError.message, status: 400 };
 
   return { data: { game_questions: newList }, status: 200 };
 }
 
-export async function submitAnswer(gameId, { user_id, question_index, answer }) {
-  if (!user_id || question_index === undefined || question_index === null || !answer) {
-    return { error: "User, question index, and answer are required", status: 400 };
+export async function submitAnswer(
+  gameId,
+  { user_id, question_index, answer },
+) {    
+
+  if (!user_id || 
+    question_index === undefined || 
+    question_index === null || 
+    !answer) {
+    return {
+      error: "User, question index, and answer are required",
+      status: 400,
+    };
   }
 
   const { data: currentGame, error } =
@@ -143,17 +160,6 @@ export async function submitAnswer(gameId, { user_id, question_index, answer }) 
 
   if (updateError) return { error: updateError.message, status: 400 };
   return { data: { game_answers: answersList }, status: 200 };
-}
-
-function isAllAnswered(game) {
-  const questions = game.game_questions || [];
-  const users = game.joined_users || [];
-  if (questions.length === 0 || users.length === 0) return false;
-  return questions.every((_, qIdx) =>
-    users.every(
-      (uid) => game.game_answers?.[qIdx]?.answers?.[uid] !== undefined,
-    ),
-  );
 }
 
 export async function submitGuess(
@@ -187,7 +193,11 @@ export async function submitGuess(
   }
 
   const joinedUsers = currentGame.joined_users || [];
-  const isJoined = (id) => joinedUsers.some((u) => String(u) === String(id));
+  function isJoined(id) {
+    return joinedUsers.some(function (joinedUserId) {
+    return String(joinedUserId) === String(id);
+  });
+}
   if (!isJoined(user_id) || !isJoined(author_id)) {
     return { error: "User or author is not part of this game", status: 400 };
   }
@@ -201,13 +211,6 @@ export async function submitGuess(
   if (authorAnswer === undefined) {
     return {
       error: "This author has not answered this question yet",
-      status: 400,
-    };
-  }
-
-  if (!isAllAnswered(currentGame)) {
-    return {
-      error: "Not all players have finished answering yet",
       status: 400,
     };
   }
@@ -279,18 +282,19 @@ export async function getRelationshipScores(gameId) {
     await gameRepository.getGameByIdInDB(gameId);
 
   if (error || !currentGame) {
-    return {
-      error: "Game not found",
-      status: 404,
-    };
+    return null;
   }
   const relationships = {};
 
   for (const question of currentGame.game_guesses || []) {
+    if (!question) continue;
+
     for (const authorId in question) {
-      for (const guesserId in question[authorId]) {
-        const guessedUserId = question[authorId][guesserId];
-       
+        const guessesByAuthor = question[authorId];
+
+      for (const guesserId in guessesByAuthor) {
+        const guessedUserId = guessesByAuthor[guesserId];
+
         if (!relationships[guesserId]) {
           relationships[guesserId] = {};
         }
@@ -302,10 +306,12 @@ export async function getRelationshipScores(gameId) {
           };
         }
 
-        relationships[guesserId][authorId].total++;
+        const relationship = 
+        relationships[guesserId][authorId];
+        relationship.total++;
 
         if (String(guessedUserId) === String(authorId)) {
-          relationships[guesserId][authorId].correct++;
+          relationship.correct++;
         }
       }
     }
@@ -314,10 +320,12 @@ export async function getRelationshipScores(gameId) {
   const results = [];
 
   for (const guesserId in relationships) {
-    for (const authorId in relationships[guesserId]) {
-      const stats = relationships[guesserId][authorId];
+      const guesserRelationships = relationships[guesserId];
 
-      const percentage = Math.round((stats.correct / stats.total) * 100);
+    for (const authorId in guesserRelationships) {
+      const { correct, total } = guesserRelationships[authorId];
+
+          const percentage = Math.round((correct / total) * 100);
 
       results.push({
         guesserId,
@@ -326,8 +334,5 @@ export async function getRelationshipScores(gameId) {
       });
     }
   }
-  return {
-    data: results,
-    status: 200,
-  };
+  return results;
 }
