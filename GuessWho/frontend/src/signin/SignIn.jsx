@@ -114,7 +114,7 @@ function SignIn() {
       <div className="text-center mt-6 text-ink-dim text-sm">
         Don't have an account?{" "}
         <span
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/", { state: { returnTo } })}
           className="text-accent font-semibold cursor-pointer hover:underline"
         >
           Sign Up
