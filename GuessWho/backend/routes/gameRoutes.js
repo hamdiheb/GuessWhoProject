@@ -8,6 +8,7 @@ import {
   submitAnswer,
   submitGuess,
   launchGame,
+  getRelationshipScores,
 } from "../controllers/gameController.js";
 
 
@@ -20,5 +21,6 @@ router.post("/:id/generate-questions", generateQuestions);
 router.post("/:id/answer", submitAnswer);
 router.post("/:id/guess", submitGuess);
 router.post("/:id/launch", launchGame);
+router.get("/:id/relationship-scores", getRelationshipScores);
 
 export default router;

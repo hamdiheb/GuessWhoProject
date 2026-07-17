@@ -1,229 +1,364 @@
-import { useState, useEffect, useRef } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import Mascot from '../components/Mascot/Mascot'
+import { useState, useEffect, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import Mascot from "../components/Mascot/Mascot";
 
-const API_URL = import.meta.env.VITE_API_URL
-const WAITING_POLL_INTERVAL_MS = 3000
+const API_URL = import.meta.env.VITE_API_URL;
+const WAITING_POLL_INTERVAL_MS = 3000;
 
 const gameCardClass =
-  'w-full max-w-[520px] bg-surface border border-border rounded-lg shadow-card p-7 sm:p-10 box-border text-center animate-fade-slide-in'
-const waitingStateClass = 'flex flex-col items-center gap-4 py-2.5 text-ink-muted'
-const pulseDotClass = 'w-3 h-3 rounded-full bg-accent animate-pulse-dot'
+  "w-full max-w-[520px] bg-surface border border-border rounded-lg shadow-card p-7 sm:p-10 box-border text-center animate-fade-slide-in";
+const waitingStateClass =
+  "flex flex-col items-center gap-4 py-2.5 text-ink-muted";
+const pulseDotClass = "w-3 h-3 rounded-full bg-accent animate-pulse-dot";
 const questionBadgeClass =
-  'inline-block text-xs font-bold tracking-wide uppercase text-accent bg-accent-soft py-1.5 px-3.5 rounded-full mb-3.5'
+  "inline-block text-xs font-bold tracking-wide uppercase text-accent bg-accent-soft py-1.5 px-3.5 rounded-full mb-3.5";
 const questionTextClass =
-  'text-[22px] sm:text-2xl font-bold text-ink leading-snug tracking-tight my-2.5 mb-6 break-words'
+  "text-[22px] sm:text-2xl font-bold text-ink leading-snug tracking-tight my-2.5 mb-6 break-words";
 const guessAnswerClass =
-  'text-[17px] italic text-ink bg-surface-2 border border-border-soft rounded-md py-4 px-4.5 my-4 break-words'
-const errorClass = 'text-danger bg-danger-soft py-2.5 px-3.5 rounded-sm my-4 text-center text-sm'
+  "text-[17px] italic text-ink bg-surface-2 border border-border-soft rounded-md py-4 px-4.5 my-4 break-words";
+const errorClass =
+  "text-danger bg-danger-soft py-2.5 px-3.5 rounded-sm my-4 text-center text-sm";
 const btnPrimaryClass =
-  'w-full py-[15px] rounded-full bg-accent text-white text-[15px] font-bold cursor-pointer font-sans transition-[transform,filter,box-shadow,background-color,color] duration-200 ease-spring not-disabled:hover:scale-[1.02] not-disabled:hover:brightness-110 not-disabled:hover:shadow-[0_8px_24px_var(--color-accent-glow)] not-disabled:active:scale-[0.99] disabled:bg-surface-2 disabled:text-ink-dim disabled:cursor-not-allowed disabled:opacity-70'
+  "w-full py-[15px] rounded-full bg-accent text-white text-[15px] font-bold cursor-pointer font-sans transition-[transform,filter,box-shadow,background-color,color] duration-200 ease-spring not-disabled:hover:scale-[1.02] not-disabled:hover:brightness-110 not-disabled:hover:shadow-[0_8px_24px_var(--color-accent-glow)] not-disabled:active:scale-[0.99] disabled:bg-surface-2 disabled:text-ink-dim disabled:cursor-not-allowed disabled:opacity-70";
 
 function useCountUp(target, durationMs = 600) {
-  const [value, setValue] = useState(target)
-  const prevRef = useRef(target)
+  const [value, setValue] = useState(target);
+  const prevRef = useRef(target);
 
   useEffect(() => {
-    const from = prevRef.current
-    const to = target
-    if (from === to) return undefined
+    const from = prevRef.current;
+    const to = target;
+    if (from === to) return undefined;
 
-    let raf
-    const start = performance.now()
+    let raf;
+    const start = performance.now();
 
     function tick(now) {
-      const t = Math.min(1, (now - start) / durationMs)
-      const eased = 1 - Math.pow(1 - t, 3)
-      setValue(Math.round(from + (to - from) * eased))
+      const t = Math.min(1, (now - start) / durationMs);
+      const eased = 1 - Math.pow(1 - t, 3);
+      setValue(Math.round(from + (to - from) * eased));
       if (t < 1) {
-        raf = requestAnimationFrame(tick)
+        raf = requestAnimationFrame(tick);
       } else {
-        prevRef.current = to
+        prevRef.current = to;
       }
     }
 
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
-  }, [target, durationMs])
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, durationMs]);
 
-  return value
+  return value;
 }
 
 function avatarGradient(id) {
   const seed = String(id)
-    .split('')
-    .reduce((h, c) => h * 31 + c.charCodeAt(0), 7)
-  const hue = ((seed % 360) + 360) % 360
-  return `linear-gradient(135deg, hsl(${hue}, 65%, 58%), hsl(${(hue + 45) % 360}, 65%, 42%))`
+    .split("")
+    .reduce((h, c) => h * 31 + c.charCodeAt(0), 7);
+  const hue = ((seed % 360) + 360) % 360;
+  return `linear-gradient(135deg, hsl(${hue}, 65%, 58%), hsl(${(hue + 45) % 360}, 65%, 42%))`;
 }
 
 export default function Gameplay() {
-  const { gameId } = useParams()
-  const navigate = useNavigate()
-  const userId = localStorage.getItem('currentUserId')
+  const { gameId } = useParams();
+  const navigate = useNavigate();
+  const userId = localStorage.getItem("currentUserId");
 
-  const [game, setGame] = useState(null)
-  const [questionIndex, setQuestionIndex] = useState(0)
-  const [answer, setAnswer] = useState('')
-  const [errorMessage, setErrorMessage] = useState('')
-  const [loading, setLoading] = useState(true)
-  const [submitting, setSubmitting] = useState(false)
-  const [finished, setFinished] = useState(false)
-  const [guessSubmitting, setGuessSubmitting] = useState(false)
-  const [guessError, setGuessError] = useState('')
-  const [answerFocused, setAnswerFocused] = useState(false)
+  const [game, setGame] = useState(null);
+  const [questionIndex, setQuestionIndex] = useState(0);
+  const [answer, setAnswer] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [finished, setFinished] = useState(false);
+  const [relationshipScores, setRelationshipScores] = useState([]);
+  const [guessSubmitting, setGuessSubmitting] = useState(false);
+  const [guessError, setGuessError] = useState("");
+  const [answerFocused, setAnswerFocused] = useState(false);
 
   useEffect(() => {
     if (!userId) {
-      navigate('/signin')
-      return
+      navigate("/signin");
+      return;
     }
-    if (!gameId) return
+    if (!gameId) return;
 
-    let cancelled = false
-    let intervalId
+    let cancelled = false;
+    let intervalId;
 
     async function loadGame() {
       try {
         const response = await fetch(`${API_URL}/api/games/${gameId}`, {
-          method: 'GET',
+          method: "GET",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
-        })
+        });
 
         if (!response.ok) {
-          if (!cancelled) setErrorMessage(`Failed to load game (status ${response.status})`)
-          return
+          if (!cancelled)
+            setErrorMessage(`Failed to load game (status ${response.status})`);
+          return;
         }
 
-        const data = await response.json()
-        if (cancelled) return
+        const data = await response.json();
+        if (cancelled) return;
 
-        setGame(data)
-        setErrorMessage('')
+        setGame(data);
+        setErrorMessage("");
       } catch (error) {
-        console.error(error)
-        if (!cancelled) setErrorMessage('Cannot connect to the server')
+        console.error(error);
+        if (!cancelled) setErrorMessage("Cannot connect to the server");
       } finally {
-        if (!cancelled) setLoading(false)
+        if (!cancelled) setLoading(false);
       }
     }
 
-    loadGame()
-    intervalId = setInterval(loadGame, WAITING_POLL_INTERVAL_MS)
+    loadGame();
+    intervalId = setInterval(loadGame, WAITING_POLL_INTERVAL_MS);
 
     return () => {
-      cancelled = true
-      clearInterval(intervalId)
+      cancelled = true;
+      clearInterval(intervalId);
+    };
+  }, [gameId, userId, navigate]);
+
+  const gameQuestions = game?.game_questions || [];
+  const gameAnswers = game?.game_answers || [];
+  const gameGuesses = game?.game_guesses || [];
+  const gameScores = game?.game_scores || {};
+  const joinedUsers = game?.joined_users || [];
+  const players = game?.players || [];
+  const isStarted = !!game?.is_started;
+
+  function hasRelationshipScores() {
+  return relationshipScores.length > 0;
+}
+
+function isGuessingFinished() {
+  return findCurrentSlot() === null;
+}
+
+function shouldLoadRelationshipScores() {
+  if (!finished) {
+    return false;
+  }
+
+  if (hasRelationshipScores()) {
+    return false;
+  }
+
+  if (!isGuessingFinished()) {
+    return false;
+  }
+
+  return true;
+}
+
+  function playerName(id) {
+     for (let i = 0; i < players.length; i++) {
+    const player = players[i];
+
+    if (String(player.id) === String(id)) {
+      return player.username;
     }
-  }, [gameId, userId, navigate])
+  }
+    return "Unknown player";
+  }
 
-  const gameQuestions = game?.game_questions || []
-  const gameAnswers = game?.game_answers || []
-  const gameGuesses = game?.game_guesses || []
-  const gameScores = game?.game_scores || {}
-  const joinedUsers = game?.joined_users || []
-  const players = game?.players || []
-  const isStarted = !!game?.is_started
+  function areAllQuestionsAnswered() {
+    if (gameQuestions.length === 0) {
+      return false;
+    }
 
-  const playerName = (id) =>
-    players.find((p) => String(p.id) === String(id))?.username || 'Unknown player'
+    if (joinedUsers.length === 0) {
+      return false;
+    }
 
-  const allAnswered =
-    gameQuestions.length > 0 &&
-    joinedUsers.length > 0 &&
-    gameQuestions.every((_, qIdx) =>
-      joinedUsers.every((uid) => gameAnswers[qIdx]?.answers?.[uid] !== undefined),
-    )
+    for (let questionIndex = 0; questionIndex < gameQuestions.length; questionIndex++) {
+    const question = gameAnswers[questionIndex];
 
-  function findCurrentSlot() {
-    for (let qIdx = 0; qIdx < gameQuestions.length; qIdx++) {
-      for (const authorId of joinedUsers) {
-        const eligibleGuessers = joinedUsers.filter((uid) => String(uid) !== String(authorId))
-        const guessesForSlot = gameGuesses[qIdx]?.[authorId] || {}
-        const complete = eligibleGuessers.every((uid) => guessesForSlot[uid] !== undefined)
-        if (!complete) return { questionIndex: qIdx, authorId }
+    if (!question) {
+      return false;
+    }
+
+    if (!question.answers) {
+        return false;
+      }
+
+    for (let userIndex = 0; userIndex < joinedUsers.length; userIndex++) {
+      const currentUserId = joinedUsers[userIndex];
+
+      
+
+      if (question.answers[currentUserId] === undefined) {
+        return false;
       }
     }
-    return null
   }
+
+  return true;
+}
+
+  const allAnswered = areAllQuestionsAnswered();
+
+ function findCurrentSlot() {
+  for (let questionIndex = 0; questionIndex < gameQuestions.length; questionIndex++) {
+
+    for (let authorIndex = 0; authorIndex < joinedUsers.length; authorIndex++) {
+
+      const authorId = joinedUsers[authorIndex];
+
+      const eligibleGuessers = [];
+
+      for (let userIndex = 0; userIndex < joinedUsers.length; userIndex++) {
+        const currentUserId = joinedUsers[userIndex];
+
+        if (String(currentUserId) !== String(authorId)) {
+          eligibleGuessers.push(currentUserId);
+        }
+      }
+
+      const guessesForSlot =
+        gameGuesses[questionIndex]?.[authorId] || {};
+
+      let complete = true;
+
+      for (let guesserIndex = 0; guesserIndex < eligibleGuessers.length; guesserIndex++) {
+        const currentUserId = eligibleGuessers[guesserIndex];
+
+        if (guessesForSlot[currentUserId] === undefined) {
+          complete = false;
+          break;
+        }
+      }
+
+      if (!complete) {
+        return {
+          questionIndex,
+          authorId,
+        };
+      }
+    }
+  }
+
+  return null;
+}
 
   async function nextQuestion() {
     if (!answer.trim()) {
-      setErrorMessage('Please enter an answer before continuing.')
-      return
+      setErrorMessage("Please enter an answer before continuing.");
+      return;
     }
 
-    setSubmitting(true)
-    setErrorMessage('')
+    setSubmitting(true);
+    setErrorMessage("");
 
     try {
       const response = await fetch(`${API_URL}/api/games/${gameId}/answer`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           user_id: userId,
           question_index: questionIndex,
           answer,
         }),
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (!response.ok) {
-        setErrorMessage(data.error || 'Failed to save answer')
-        return
+        setErrorMessage(data.error || "Failed to save answer");
+        return;
       }
 
-      setAnswer('')
+      setAnswer("");
       if (questionIndex + 1 < gameQuestions.length) {
-        setQuestionIndex((prev) => prev + 1)
+        setQuestionIndex((prev) => prev + 1);
       } else {
-        setFinished(true)
+        setFinished(true);
       }
     } catch (error) {
-      console.error(error)
-      setErrorMessage('Cannot connect to the server')
+      console.error(error);
+      setErrorMessage("Cannot connect to the server");
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
   }
 
   async function submitGuess(slot, guessedUserId) {
-    setGuessSubmitting(true)
-    setGuessError('')
+    setGuessSubmitting(true);
+    setGuessError("");
     try {
       const response = await fetch(`${API_URL}/api/games/${gameId}/guess`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           user_id: userId,
           question_index: slot.questionIndex,
           author_id: slot.authorId,
           guessed_user_id: guessedUserId,
         }),
-      })
-      const data = await response.json()
+      });
+      const result = await response.json();
       if (!response.ok) {
-        setGuessError(data.error || 'Failed to submit guess')
-        return
+        setGuessError(result.error || "Failed to submit guess");
+        return;
       }
-      setGame((prev) => ({ ...prev, game_guesses: data.game_guesses, game_scores: data.game_scores }))
+      setGame((prev) => ({
+        ...prev,
+        game_guesses: result.game_guesses,
+        game_scores: result.game_scores,
+      }));
     } catch (err) {
-      console.error(err)
-      setGuessError('Cannot connect to the server')
+      console.error(err);
+      setGuessError("Cannot connect to the server");
     } finally {
-      setGuessSubmitting(false)
+      setGuessSubmitting(false);
     }
   }
 
-  const myScore = useCountUp(gameScores[userId] || 0)
+  async function fetchRelationshipScores() {
+  const response = await fetch(
+    `${API_URL}/api/games/${gameId}/relationship-scores`,
+  );
 
-  if (loading) return <p className="text-center text-ink-muted py-16">Loading...</p>
-  if (errorMessage && gameQuestions.length === 0) return <p className={errorClass}>{errorMessage}</p>
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.error || "Failed to load relationship scores");
+  }
+
+  return result;
+}
+
+
+  const myScore = useCountUp(gameScores[userId] || 0);
+
+  async function loadRelationshipScores() {
+  try {
+    const relationshipScores = await fetchRelationshipScores();
+
+    setRelationshipScores(relationshipScores);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+  useEffect(function () {
+  if (!shouldLoadRelationshipScores()) {
+    return;
+  }
+
+  loadRelationshipScores();
+}, [finished, gameGuesses, relationshipScores.length]);
+
+  if (loading)
+    return <p className="text-center text-ink-muted py-16">Loading...</p>;
+  if (errorMessage && gameQuestions.length === 0)
+    return <p className={errorClass}>{errorMessage}</p>;
 
   if (!isStarted) {
     return (
@@ -233,11 +368,13 @@ export default function Gameplay() {
           <p>Waiting for the host to launch the game...</p>
         </div>
       </section>
-    )
+    );
   }
 
   if (gameQuestions.length === 0) {
-    return <p className="text-center text-ink-muted py-16">No questions found.</p>
+    return (
+      <p className="text-center text-ink-muted py-16">No questions found.</p>
+    );
   }
 
   if (finished) {
@@ -249,28 +386,52 @@ export default function Gameplay() {
             <p>You're done! Waiting for other players to finish answering...</p>
           </div>
         </section>
-      )
+      );
     }
 
-    const slot = findCurrentSlot()
+    const slot = findCurrentSlot();
 
     if (slot === null) {
-      const ranked = [...joinedUsers]
-        .map((uid) => ({ uid, score: gameScores[uid] || 0 }))
-        .sort((a, b) => b.score - a.score)
+      const rankedPlayers = [];
+      for (let i = 0; i < joinedUsers.length; i++) {
+        const userId = joinedUsers[i];
 
+        rankedPlayers.push({
+          uid: userId,
+          score: gameScores[userId] || 0,
+        });
+      }
+
+      rankedPlayers.sort(function (firstPlayer, secondPlayer) {
+        return secondPlayer.score - firstPlayer.score;
+      });
+
+      const myRelationships = [];
+      for (let i = 0; i < relationshipScores.length; i++) {
+        const score = relationshipScores[i];
+
+        if (String(score.guesserId) === String(userId)) {
+          myRelationships.push(score);
+        }
+      }
       return (
         <section className="flex justify-center py-12 px-5">
           <div className={`${gameCardClass} relative overflow-hidden`}>
-            <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+            <div
+              className="absolute inset-0 pointer-events-none overflow-hidden"
+              aria-hidden="true"
+            >
               {Array.from({ length: 18 }).map((_, i) => (
                 <span
                   key={i}
                   className="confetti-piece"
                   style={{
                     left: `${5 + i * 5}%`,
-                    '--x': `${(i % 2 === 0 ? 1 : -1) * (15 + ((i * 7) % 25))}px`,
-                    background: i % 3 === 0 ? 'var(--color-success)' : 'var(--color-accent)',
+                    "--x": `${(i % 2 === 0 ? 1 : -1) * (15 + ((i * 7) % 25))}px`,
+                    background:
+                      i % 3 === 0
+                        ? "var(--color-success)"
+                        : "var(--color-accent)",
                     animationDelay: `${(i * 47) % 200}ms`,
                   }}
                 />
@@ -278,7 +439,7 @@ export default function Gameplay() {
             </div>
             <p className="text-2xl font-bold text-ink mb-6">Final results!</p>
             <ol className="list-none p-0 m-0 mb-7 flex flex-col gap-2.5">
-              {ranked.map(({ uid, score }, i) => (
+              {rankedPlayers.map(({ uid, score }, i) => (
                 <li
                   key={uid}
                   className="flex items-center gap-3 py-3 px-4 bg-surface-2 border border-border-soft rounded-md text-left animate-fade-slide-in"
@@ -286,7 +447,9 @@ export default function Gameplay() {
                 >
                   <span
                     className={`flex items-center justify-center w-[26px] h-[26px] shrink-0 rounded-full font-bold text-xs border border-border ${
-                      i === 0 ? 'bg-accent text-white border-accent' : 'bg-surface text-ink-dim'
+                      i === 0
+                        ? "bg-accent text-white border-accent"
+                        : "bg-surface text-ink-dim"
                     }`}
                   >
                     {i + 1}
@@ -297,29 +460,52 @@ export default function Gameplay() {
                   >
                     {playerName(uid).charAt(0).toUpperCase()}
                   </span>
-                  <span className="flex-1 font-semibold text-ink text-sm break-words min-w-0">{playerName(uid)}</span>
+                  <span className="flex-1 font-semibold text-ink text-sm break-words min-w-0">
+                    {playerName(uid)}
+                  </span>
                   <span className="font-bold text-accent text-sm">
-                    {score} pt{score === 1 ? '' : 's'}
+                    {score} pt{score === 1 ? "" : "s"}
                   </span>
                 </li>
               ))}
             </ol>
-            <button className={btnPrimaryClass} onClick={() => navigate('/dashboard')}>
+            <h3 className="text-lg font-bold mt-8 mb-4">Relationship Scores</h3>
+
+            <ul className="space-y-2">
+              {myRelationships.map((item) => (
+                <li key={item.authorId}>
+                  You know {playerName(item.authorId)} —{" "}
+                  <strong>{item.percentage}%</strong>
+                </li>
+              ))}
+            </ul>
+            <button
+              className={btnPrimaryClass}
+              onClick={() => navigate("/dashboard")}
+            >
               Back to Dashboard
             </button>
           </div>
         </section>
-      )
+      );
     }
 
     if (String(slot.authorId) === String(userId)) {
       return (
         <section className="flex justify-center py-12 px-5">
-          <div className={gameCardClass} key={`author-${slot.questionIndex}-${slot.authorId}`}>
-            <p className={questionBadgeClass}>Question {slot.questionIndex + 1}</p>
-            <p className={questionTextClass}>{gameQuestions[slot.questionIndex]}</p>
+          <div
+            className={gameCardClass}
+            key={`author-${slot.questionIndex}-${slot.authorId}`}
+          >
+            <p className={questionBadgeClass}>
+              Question {slot.questionIndex + 1}
+            </p>
+            <p className={questionTextClass}>
+              {gameQuestions[slot.questionIndex]}
+            </p>
             <p className={guessAnswerClass}>
-              Your answer: "{gameAnswers[slot.questionIndex]?.answers?.[userId]}"
+              Your answer: "{gameAnswers[slot.questionIndex]?.answers?.[userId]}
+              "
             </p>
             <div className={waitingStateClass}>
               <span className={pulseDotClass} />
@@ -327,20 +513,20 @@ export default function Gameplay() {
             </div>
           </div>
         </section>
-      )
+      );
     }
 
-    const myGuess = gameGuesses[slot.questionIndex]?.[slot.authorId]?.[userId]
+    const myGuess = gameGuesses[slot.questionIndex]?.[slot.authorId]?.[userId];
 
     if (myGuess !== undefined) {
-      const wasCorrect = String(myGuess) === String(slot.authorId)
+      const wasCorrect = String(myGuess) === String(slot.authorId);
       return (
         <section className="flex justify-center py-12 px-5">
           <div
             className={`${gameCardClass} ${
               wasCorrect
-                ? 'shadow-[0_20px_50px_rgba(0,0,0,0.35),0_0_0_1px_var(--color-accent-border),0_0_40px_var(--color-accent-glow)] animate-correct-pop'
-                : 'animate-shake'
+                ? "shadow-[0_20px_50px_rgba(0,0,0,0.35),0_0_0_1px_var(--color-accent-border),0_0_40px_var(--color-accent-glow)] animate-correct-pop"
+                : "animate-shake"
             }`}
             key={`guessed-${slot.questionIndex}-${slot.authorId}`}
           >
@@ -350,14 +536,19 @@ export default function Gameplay() {
               </span>
             )}
             <p className="text-lg font-bold text-ink mb-1.5">
-              You guessed {playerName(myGuess)} — {wasCorrect ? 'Correct!' : 'Not quite.'}
+              You guessed {playerName(myGuess)} —{" "}
+              {wasCorrect ? "Correct!" : "Not quite."}
             </p>
             {!wasCorrect && (
-              <p className="text-ink-muted text-sm mb-2.5">It was actually {playerName(slot.authorId)}.</p>
+              <p className="text-ink-muted text-sm mb-2.5">
+                It was actually {playerName(slot.authorId)}.
+              </p>
             )}
             <p className="text-ink-dim text-[13px] mt-3.5 mb-1">
-              Your score:{' '}
-              <span className="text-accent font-bold text-[15px] tabular-nums">{myScore}</span>
+              Your score:{" "}
+              <span className="text-accent font-bold text-[15px] tabular-nums">
+                {myScore}
+              </span>
             </p>
             <div className={waitingStateClass}>
               <span className={pulseDotClass} />
@@ -365,17 +556,33 @@ export default function Gameplay() {
             </div>
           </div>
         </section>
-      )
+      );
     }
 
-    const candidates = joinedUsers.filter((uid) => String(uid) !== String(userId))
-    const revealedAnswer = gameAnswers[slot.questionIndex]?.answers?.[slot.authorId]
+    const candidates = [];
+
+    for (let i = 0; i < joinedUsers.length; i++) {
+      const candidateId = joinedUsers[i];
+
+      if (String(candidateId) !== String(userId)) {
+        candidates.push(candidateId);
+      }
+    }
+    const revealedAnswer =
+      gameAnswers[slot.questionIndex]?.answers?.[slot.authorId];
 
     return (
       <section className="flex justify-center py-12 px-5">
-        <div className={gameCardClass} key={`guessing-${slot.questionIndex}-${slot.authorId}`}>
-          <p className={questionBadgeClass}>Question {slot.questionIndex + 1}</p>
-          <p className={questionTextClass}>{gameQuestions[slot.questionIndex]}</p>
+        <div
+          className={gameCardClass}
+          key={`guessing-${slot.questionIndex}-${slot.authorId}`}
+        >
+          <p className={questionBadgeClass}>
+            Question {slot.questionIndex + 1}
+          </p>
+          <p className={questionTextClass}>
+            {gameQuestions[slot.questionIndex]}
+          </p>
           <p className={guessAnswerClass}>"{revealedAnswer}"</p>
           <p className="font-semibold text-ink mb-4.5">Who wrote this?</p>
           {guessError && <p className={errorClass}>{guessError}</p>}
@@ -393,7 +600,7 @@ export default function Gameplay() {
           </div>
         </div>
       </section>
-    )
+    );
   }
 
   return (
@@ -409,17 +616,21 @@ export default function Gameplay() {
           <div className="h-1 rounded-full bg-border overflow-hidden">
             <div
               className="h-full rounded-full bg-accent transition-[width] duration-500 ease-in-out"
-              style={{ width: `${((questionIndex + 1) / gameQuestions.length) * 100}%` }}
+              style={{
+                width: `${((questionIndex + 1) / gameQuestions.length) * 100}%`,
+              }}
             />
           </div>
         </div>
-        <p className={`${questionTextClass} animate-fade-slide-in`}>{gameQuestions[questionIndex]}</p>
+        <p className={`${questionTextClass} animate-fade-slide-in`}>
+          {gameQuestions[questionIndex]}
+        </p>
         <input
           type="text"
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') nextQuestion()
+            if (e.key === "Enter") nextQuestion();
           }}
           onFocus={() => setAnswerFocused(true)}
           onBlur={() => setAnswerFocused(false)}
@@ -427,10 +638,18 @@ export default function Gameplay() {
           className="w-full box-border py-3.5 px-4.5 bg-surface-2 border border-border rounded-md text-[15px] font-sans text-ink placeholder:text-ink-dim mb-5 outline-none transition-[border-color,box-shadow] duration-200 focus:border-accent-border focus:shadow-[0_0_0_4px_var(--color-accent-soft)]"
         />
         {errorMessage && <p className={errorClass}>{errorMessage}</p>}
-        <button className={btnPrimaryClass} onClick={nextQuestion} disabled={submitting}>
-          {submitting ? 'Saving...' : questionIndex + 1 < gameQuestions.length ? 'Next' : 'Finish'}
+        <button
+          className={btnPrimaryClass}
+          onClick={nextQuestion}
+          disabled={submitting}
+        >
+          {submitting
+            ? "Saving..."
+            : questionIndex + 1 < gameQuestions.length
+              ? "Next"
+              : "Finish"}
         </button>
       </div>
     </section>
-  )
+  );
 }

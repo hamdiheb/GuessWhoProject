@@ -62,3 +62,14 @@ export const launchGame = async (req, res) => {
   if (error) return res.status(status).json({ error });
   return res.status(status).json(data);
 };
+
+export const getRelationshipScores = async (req, res) => {
+  const results = await gameService.getRelationshipScores(req.params.id);
+
+  if(!results) {
+    return res.status(404).json({
+    });
+  }
+  
+  return res.status(200).json(results)
+};
