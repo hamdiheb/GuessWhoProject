@@ -27,7 +27,8 @@ export async function joinGame({ game_code, user_id }) {
     return { error: "Room code and user are required", status: 400 };
   }
 
-  const { data: game, error } = await gameRepository.getGameByCodeInDB(game_code);
+  const { data: game, error } =
+    await gameRepository.getGameByCodeInDB(game_code);
   if (error || !game) return { error: "Room not found", status: 404 };
 
   const users = game.joined_users || [];
@@ -59,7 +60,9 @@ export async function getGame(gameId) {
 
   let players = [];
   if (game.joined_users?.length) {
-    const { data: userData } = await gameRepository.getUsersByIds(game.joined_users);
+    const { data: userData } = await gameRepository.getUsersByIds(
+      game.joined_users,
+    );
     if (userData) players = userData;
   }
 
@@ -67,7 +70,8 @@ export async function getGame(gameId) {
 }
 
 export async function addQuestion(gameId, question) {
-  const { data: currentGame, error } = await gameRepository.getGameByIdInDB(gameId);
+  const { data: currentGame, error } =
+    await gameRepository.getGameByIdInDB(gameId);
   if (error || !currentGame) return { error: "Game not found", status: 404 };
 
   const newList = [...(currentGame.game_questions || []), question];
@@ -80,12 +84,24 @@ export async function addQuestion(gameId, question) {
   return { data: { game_questions: newList }, status: 200 };
 }
 
-export async function submitAnswer(gameId, { user_id, question_index, answer }) {
-  if (!user_id || question_index === undefined || question_index === null || !answer) {
-    return { error: "User, question index, and answer are required", status: 400 };
+export async function submitAnswer(
+  gameId,
+  { user_id, question_index, answer },
+) {
+  if (
+    !user_id ||
+    question_index === undefined ||
+    question_index === null ||
+    !answer
+  ) {
+    return {
+      error: "User, question index, and answer are required",
+      status: 400,
+    };
   }
 
-  const { data: currentGame, error } = await gameRepository.getGameByIdInDB(gameId);
+  const { data: currentGame, error } =
+    await gameRepository.getGameByIdInDB(gameId);
   if (error || !currentGame) return { error: "Game not found", status: 404 };
 
   const question = currentGame.game_questions?.[question_index];
@@ -118,21 +134,31 @@ function isAllAnswered(game) {
   const users = game.joined_users || [];
   if (questions.length === 0 || users.length === 0) return false;
   return questions.every((_, qIdx) =>
-    users.every((uid) => game.game_answers?.[qIdx]?.answers?.[uid] !== undefined),
+    users.every(
+      (uid) => game.game_answers?.[qIdx]?.answers?.[uid] !== undefined,
+    ),
   );
 }
 
-export async function submitGuess(gameId, { user_id, question_index, author_id, guessed_user_id }) {
+export async function submitGuess(
+  gameId,
+  { user_id, question_index, author_id, guessed_user_id },
+) {
   if (
     !user_id ||
-    question_index === undefined || question_index === null ||
+    question_index === undefined ||
+    question_index === null ||
     !author_id ||
     !guessed_user_id
   ) {
-    return { error: "User, question index, author, and guessed user are required", status: 400 };
+    return {
+      error: "User, question index, author, and guessed user are required",
+      status: 400,
+    };
   }
 
-  const { data: currentGame, error } = await gameRepository.getGameByIdInDB(gameId);
+  const { data: currentGame, error } =
+    await gameRepository.getGameByIdInDB(gameId);
   if (error || !currentGame) return { error: "Game not found", status: 404 };
 
   if (!currentGame.is_started) {
@@ -154,13 +180,20 @@ export async function submitGuess(gameId, { user_id, question_index, author_id, 
     return { error: "You cannot guess your own answer", status: 400 };
   }
 
-  const authorAnswer = currentGame.game_answers?.[question_index]?.answers?.[author_id];
+  const authorAnswer =
+    currentGame.game_answers?.[question_index]?.answers?.[author_id];
   if (authorAnswer === undefined) {
-    return { error: "This author has not answered this question yet", status: 400 };
+    return {
+      error: "This author has not answered this question yet",
+      status: 400,
+    };
   }
 
   if (!isAllAnswered(currentGame)) {
-    return { error: "Not all players have finished answering yet", status: 400 };
+    return {
+      error: "Not all players have finished answering yet",
+      status: 400,
+    };
   }
 
   const guesses = currentGame.game_guesses ? [...currentGame.game_guesses] : [];
@@ -194,10 +227,13 @@ export async function submitGuess(gameId, { user_id, question_index, author_id, 
     scores[user_id] = (scores[user_id] || 0) + 1;
   }
 
-  const { error: updateError } = await gameRepository.updateGuessesInDB(gameId, {
-    game_guesses: guesses,
-    game_scores: scores,
-  });
+  const { error: updateError } = await gameRepository.updateGuessesInDB(
+    gameId,
+    {
+      game_guesses: guesses,
+      game_scores: scores,
+    },
+  );
 
   if (updateError) return { error: updateError.message, status: 400 };
 
@@ -208,7 +244,8 @@ export async function submitGuess(gameId, { user_id, question_index, author_id, 
 }
 
 export async function launchGame(gameId, hostId) {
-  const { data: currentGame, error } = await gameRepository.getGameByIdInDB(gameId);
+  const { data: currentGame, error } =
+    await gameRepository.getGameByIdInDB(gameId);
   if (error || !currentGame) return { error: "Game not found", status: 404 };
 
   if (String(currentGame.host_id) !== String(hostId)) {
@@ -219,4 +256,62 @@ export async function launchGame(gameId, hostId) {
   if (updateError) return { error: updateError.message, status: 400 };
 
   return { data: { is_started: true }, status: 200 };
+}
+
+export async function getRelationshipScores(gameId) {
+  const { data: currentGame, error } =
+    await gameRepository.getGameByIdInDB(gameId);
+
+  if (error || !currentGame) {
+    return {
+      error: "Game not found",
+      status: 404,
+    };
+  }
+  const relationships = {};
+
+  for (const question of currentGame.game_guesses || []) {
+    for (const authorId in question) {
+      for (const guesserId in question[authorId]) {
+        const guessedUserId = question[authorId][guesserId];
+       
+        if (!relationships[guesserId]) {
+          relationships[guesserId] = {};
+        }
+
+        if (!relationships[guesserId][authorId]) {
+          relationships[guesserId][authorId] = {
+            correct: 0,
+            total: 0,
+          };
+        }
+
+        relationships[guesserId][authorId].total++;
+
+        if (String(guessedUserId) === String(authorId)) {
+          relationships[guesserId][authorId].correct++;
+        }
+      }
+    }
+  }
+
+  const results = [];
+
+  for (const guesserId in relationships) {
+    for (const authorId in relationships[guesserId]) {
+      const stats = relationships[guesserId][authorId];
+
+      const percentage = Math.round((stats.correct / stats.total) * 100);
+
+      results.push({
+        guesserId,
+        authorId,
+        percentage,
+      });
+    }
+  }
+  return {
+    data: results,
+    status: 200,
+  };
 }
