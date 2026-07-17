@@ -137,9 +137,18 @@ export default function Gameplay() {
       joinedUsers.every((uid) => gameAnswers[qIdx]?.answers?.[uid] !== undefined),
     )
 
+  function getFeaturedAuthors(qIdx) {
+    const n = joinedUsers.length
+    if (n <= 2) return joinedUsers
+
+    const idx1 = (qIdx * 2) % n
+    const idx2 = (idx1 + 1) % n
+    return [joinedUsers[idx1], joinedUsers[idx2]]
+  }
+
   function findCurrentSlot() {
     for (let qIdx = 0; qIdx < gameQuestions.length; qIdx++) {
-      for (const authorId of joinedUsers) {
+      for (const authorId of getFeaturedAuthors(qIdx)) {
         const eligibleGuessers = joinedUsers.filter((uid) => String(uid) !== String(authorId))
         const guessesForSlot = gameGuesses[qIdx]?.[authorId] || {}
         const complete = eligibleGuessers.every((uid) => guessesForSlot[uid] !== undefined)
