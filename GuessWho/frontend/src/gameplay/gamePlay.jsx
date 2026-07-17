@@ -257,7 +257,7 @@ export default function Gameplay() {
         console.error(data.error);
         return;
       }
-
+     console.log("Relationship scores:", data);
       setRelationshipScores(data);
     } catch (error) {
       console.error(error);
@@ -308,10 +308,11 @@ export default function Gameplay() {
         .sort((a, b) => b.score - a.score);
 
       const myRelationships = relationshipScores.filter(
-        (item) =>
-          String(item.guesserId) === String(userId) &&
-          String(item.authorId) !== String(userId),
+        (item) =>String(item.guesserId) === String(userId),
       );
+      console.log("Current user:", userId);
+      console.log("My relationships:", myRelationships);
+      console.log("Players:", players);
 
       return (
         <section className="flex justify-center py-12 px-5">
