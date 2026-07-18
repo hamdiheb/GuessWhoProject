@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import email_icon from "./Assets_SignUp/email.jpg";
 import user_icon from "./Assets_SignUp/user.jpg";
 import password_icon from "./Assets_SignUp/password.jpg";
@@ -21,6 +21,8 @@ function SignUp() {
   const [errorMessage, setErrorMessage] = useState("");
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const returnTo = location.state?.returnTo || "/dashboard";
 
   const isFormIncomplete =
     !username.trim() || !email.trim() || !password.trim();
@@ -61,7 +63,7 @@ function SignUp() {
       localStorage.setItem("currentUserId", String(data.id));
 
       setTimeout(() => {
-        navigate("/dashboard");
+        navigate(returnTo);
       }, 1000);
     } catch (error) {
       console.error(error);
@@ -146,7 +148,7 @@ function SignUp() {
       <div className="text-center mt-6 text-ink-dim text-sm">
         Already have an account?{" "}
         <span
-          onClick={() => navigate("/signin")}
+          onClick={() => navigate("/signin", { state: { returnTo } })}
           className="text-accent font-semibold cursor-pointer hover:underline"
         >
           Sign In
